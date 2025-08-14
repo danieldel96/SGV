@@ -30,7 +30,7 @@ It includes work across **UX research, AR/VR development, prototyping, and data 
 ### **1. Shared-Gaze Visualization in AR**
 **Tech:** Unity, MRTK, C#, HoloLens 2, Eye-tracking  
 **Summary:**  
-Developed a real-time shared-gaze system for collaborative industrial tasks. Conducted **60+ study sessions**, resulting in publications at **IEEE VR** (*Best Poster Honorable Mention*).  
+Developed a real-time shared-gaze system for collaborative industrial tasks. Conducted **60+ study sessions**, resulting in publications at **IEEE VR 2024** (*Best Poster Honorable Mention*) and **IEEE ISMAR 2025**
 **[→ View Project Folder](projects/shared-gaze-ar/)**
 
 ---
