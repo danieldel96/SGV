@@ -3,8 +3,8 @@ This repository contains a collection of my professional and academic projects, 
 # Daniel Delgado, PhD – Professional Project Archive
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue)](https://www.linkedin.com/in/danieldel1996/)  
-[![Email](https://img.shields.io/badge/Email-Contact-lightgrey)](mailto:danieldeldelgado.xr@gmail.com)
-[![Email](https://img.shields.io/badge/Email-Contact-lightgrey)](mailto:danieldel@ufl.edu)
+[![Email (Business)](https://img.shields.io/badge/Email-Contact-lightgrey)](mailto:danieldeldelgado.xr@gmail.com)
+[![Email (edu)](https://img.shields.io/badge/Email-Contact-lightgrey)](mailto:danieldel@ufl.edu)
 
 
 ---
