@@ -1,4 +1,5 @@
-This repository contains a collection of my professional and academic projects, including augmented reality research, UX case studies, and interactive prototypes. It serves as an archive of work completed between 2019 and 2025, spanning roles in industry, academia, and personal innovation.
+Daniel Delgado is a user experience researcher from Gainesville, Florida, with over six years of experience designing and developing systems to enhance human–computer interaction. He earned his Bachelor of Science in Computer Engineering from Florida State University in 2019 and his Doctor of Philosophy in Computer Science from the University of Florida in 2025.
+This repository contains a collection of professional and academic projects, including augmented reality research, UX case studies, and interactive prototypes. It serves as an archive of work completed between 2019 and 2025, spanning roles in industry, academia, and personal innovation.
 
 # Daniel Delgado, PhD – Professional Project Archive
 
