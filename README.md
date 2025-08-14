@@ -20,8 +20,10 @@ It includes work across **UX research, AR/VR development, prototyping, and data 
 1. [About](#-about)  
 2. [Publications](#-publications)  
 3. [Full Project List](#-full-project-list)  
-4. [Skills & Tools](#-skills--tools)  
-5. [Contact](#-contact)  
+4. [Skills & Tools](#-skills--tools)
+5. [Resume](#-resume)
+6. [Curriculum Vitae](#-curriculum-vitae)
+7. [Contact](#-contact)  
 
 ---
 
