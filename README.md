@@ -1,0 +1,1 @@
+This repository contains a collection of my professional and academic projects, including augmented reality research, UX case studies, and interactive prototypes. It serves as an archive of work completed between [start year] and [end year/present], spanning roles in industry, academia, and personal innovation.
