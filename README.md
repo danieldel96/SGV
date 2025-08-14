@@ -25,6 +25,10 @@ Daniel Delgado is a user experience researcher from Gainesville, Florida, with o
 7. [Contact](#-contact)  
 
 ---
+## Publications
+
+
+__
 
 ## 🌟 Project Highlights
 
@@ -34,7 +38,7 @@ Daniel Delgado is a user experience researcher from Gainesville, Florida, with o
 Developed a real-time shared-gaze system for collaborative industrial tasks. Conducted **60+ study sessions**, resulting in publications at **IEEE VR 2024** (*Best Poster Honorable Mention*) and **IEEE ISMAR 2025**
 **[→ View Project Folder](projects/shared-gaze-ar/)**
 
----
+___
 
 ### **2. VR Prosthetic Training Platform**
 **Tech:** Unity, C#, Oculus VR  
