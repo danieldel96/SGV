@@ -1,6 +1,6 @@
 This repository contains a collection of my professional and academic projects, including augmented reality research, UX case studies, and interactive prototypes. It serves as an archive of work completed between 2019 and 2025, spanning roles in industry, academia, and personal innovation.
 
-# Daniel Del Castillo – Professional Project Archive
+# Daniel Delgado – Professional Project Archive
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue)](https://www.linkedin.com/in/danieldel1996/)  
 [![Email](https://img.shields.io/badge/Email-Contact-lightgrey)](mailto:danieldeldelgado.xr@gmail.com)
