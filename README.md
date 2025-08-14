@@ -18,7 +18,7 @@ It includes work across **UX research, AR/VR development, prototyping, and data 
 
 ## 🗂 Table of Contents
 1. [About](#-about)  
-2. [Project Highlights](#-project-highlights)  
+2. [Publications](#-publications)  
 3. [Full Project List](#-full-project-list)  
 4. [Skills & Tools](#-skills--tools)  
 5. [Contact](#-contact)  
@@ -75,7 +75,6 @@ Led user interviews, usability testing, and prototyping for an internal producti
 ## 📬 Contact
 
 📧 **Email:** [YOUR-EMAIL](mailto:YOUR-EMAIL)  
-🌐 **Portfolio:** [YOUR-PORTFOLIO.com](https://YOUR-PORTFOLIO.com)  
-🔗 **LinkedIn:** [linkedin.com/in/YOUR-LINK](https://linkedin.com/in/YOUR-LINK)
+🔗 **LinkedIn:** [https://www.linkedin.com/in/danieldel1996/](https://www.linkedin.com/in/danieldel1996/)
 
 ---
