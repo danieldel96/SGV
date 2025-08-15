@@ -32,7 +32,7 @@ Daniel Delgado is a user experience researcher residing in Oceanside, California
 2. Understanding User Needs for Task Guidance Systems Through the Lens of Cooking [→ View Publication](Publications/Understanding-User-Needs.pdf)
 4. Evaluation of shared-gaze visualizations for virtual assembly tasks [→ View Publication](Publications/Evaluation-of-SGV.pdf)
 
-See more... [→ View Publications](/Portfolio/Publications/)
+See more... [→ View Publications](/Publications/)
 
 ___
 
@@ -100,7 +100,7 @@ ___
 
 ---
 ## Teaching Materials
-[→ View Teaching Materials](/Portfolio/Teaching/)
+[→ View Teaching Materials](/Teaching/)
 
 ___
 
