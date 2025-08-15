@@ -47,7 +47,7 @@ ___
 
 ### **2. VR Prosthetic Training Platform**
 **Tech:** 
-Unity, C#, Oculus VR
+Unity, C#, HTC Vive Pro 2 Virtual Reality
 **Summary:**  
 Designed and evaluated a VR-based training tool for EMG-controlled prosthetic hands. Conducted usability testing and performance analysis with **100+ hours** of user trials.  
 **[→ View Project Folder](Projects/EMG-Based-Human-Machine-Interface/)**
