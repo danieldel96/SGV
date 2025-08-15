@@ -18,7 +18,7 @@ Daniel Delgado is a user experience researcher residing in Oceanside, California
 ## 🗂 Table of Contents
 1. [About](#-about)  
 2. [Publications](#-publications)  
-3. [Full Project List](#-full-project-list)  
+3. [Projects](#-projects)  
 4. [Skills & Tools](#-skills--tools)
 5. [Resume](#-resume)
 6. [Curriculum Vitae](#-curriculum-vitae)
