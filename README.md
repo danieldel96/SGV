@@ -45,16 +45,18 @@ Developed a real-time shared-gaze system for collaborative industrial tasks. Con
 ___
 
 ### **2. VR Prosthetic Training Platform**
-**Tech:** Unity, C#, Oculus VR  
+**Tech:** 
+Unity, C#, Oculus VR
 **Summary:**  
 Designed and evaluated a VR-based training tool for EMG-controlled prosthetic hands. Conducted usability testing and performance analysis with **100+ hours** of user trials.  
 **[→ View Project Folder](Projects/EMG-Based-Machine-Interface/)**
 
 ---
 ### **3. Augmented Reality Task Guidance**
-**Tech:** Unity, HoloLens 2
+**Tech:** Unity, HoloLens 2 
 **Summary:**
 Developed a multi-modal augmented reality system to guide users through complex cooking tasks while adpating to their needs. Additionally, provided a set of design guidelines and recommendations for future systems.
+
 ___
 ### **4. Multi-Modal Affect Detection**
 **Tech:** TensorFlow, CUDA, Python, High-Performance Computing
