@@ -100,7 +100,7 @@ ___
 
 ---
 ## Teaching Materials
-[→ View Teaching Materials](/Portfolio/Teaching/)
+[→ View Teaching Materials](https://github.com/danieldel96/Portfolio/tree/main/Teaching)
 
 ___
 
