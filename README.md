@@ -73,13 +73,13 @@ Led user interviews, usability testing, and prototyping for an internal producti
 **Development:** Unity, MRTK, C#, VR/AR Interaction Design  
 **Design:** Figma, Prototyping, Wireframing  
 **Data Analysis:** R, Python, SPSS, Statistical Analysis  
-**Collaboration:** Git, Jira, Confluence  
+**Collaboration:** Git
 
 ---
 
 ## 📬 Contact
 
-📧 **Email:** [YOUR-EMAIL](mailto:YOUR-EMAIL)  
+📧 **Email:** [danieldelgado.xr@gmail.com](mailto:danieldelgado.xr@gmail.com)
 🔗 **LinkedIn:** [https://www.linkedin.com/in/danieldel1996/](https://www.linkedin.com/in/danieldel1996/)
 
 ---
