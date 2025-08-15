@@ -1,0 +1,5 @@
+Based on paper by M. Dedeoglu, J. Zhang and R. Liang, "Emotion Classification Based on Audiovisual Information Fusion Using Deep Learning," 2019 International Conference on Data Mining Workshops (ICDMW), Beijing, China, 2019, pp. 131-134, doi: 10.1109/ICDMW.2019.00029.
+
+makenpz.ipynb converts dataset to usable npz file for training/testing.
+
+fapi2.ipynb is the functional api fusion model using audio-visual sources. Uses the npz created in makenpz.ipynb and trains/tests the multi-modal model.
