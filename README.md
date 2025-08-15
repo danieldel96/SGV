@@ -18,7 +18,7 @@ Daniel Delgado is a user experience researcher residing in Oceanside, California
 ## 🗂 Table of Contents
 1. [About](#-about)  
 2. [Publications](#-publications)  
-3. [Full Project List](#-full-project-list)  
+3. [Projects](#-projects)  
 4. [Skills & Tools](#-skills--tools)
 5. [Resume](#-resume)
 6. [Curriculum Vitae](#-curriculum-vitae)
@@ -26,11 +26,15 @@ Daniel Delgado is a user experience researcher residing in Oceanside, California
 
 ---
 ## Publications
+### Most Recent Publications
+1. When Is Self-Gaze Helpful? Examining Uni- vs Bi-directional Gaze Visualization in Collocated AR Tasks [→ View Publication](Publications/When-is-Self-Gaze-Necessary.pdf)
+2. Understanding User Needs for Task Guidance Systems Through the Lens of Cooking [→ View Publication](Publications/Understanding-User-Needs.pdf)
+4. Evaluation of shared-gaze visualizations for virtual assembly tasks [→ View Publication](Publications/Evaluation-of-SGV.pdf)
 
 
-__
+___
 
-## 🌟 Project Highlights
+## 🌟 Projects
 
 ### **1. Shared-Gaze Visualization in AR**
 **Tech:** Unity, MRTK, C#, HoloLens 2, Eye-tracking  
@@ -48,22 +52,13 @@ Designed and evaluated a VR-based training tool for EMG-controlled prosthetic ha
 
 ---
 
-### **3. UX Case Study – Workplace App**
-**Tech:** Figma, UX Research, Wireframing  
-**Summary:**  
-Led user interviews, usability testing, and prototyping for an internal productivity tool used by a distributed team.  
-**[→ View Project Folder](projects/workplace-app/)**
-
----
-
 ## 📂 Full Project List
 
 | Project | Description | Skills / Tech |
 |---------|-------------|---------------|
 | Shared-Gaze Visualization in AR | Full-stack AR system for collaborative industrial tasks | Unity, MRTK, C#, UX Research |
-| VR Prosthetic Training Platform | VR-based training for EMG prosthetic hands | Unity, C#, VR Interaction Design |
-| UX Case Study – Workplace App | Internal productivity tool research & design | Figma, Usability Testing, Wireframing |
-| [Add more...] | ... | ... |
+| EMG-Based Human-Machine Interaction | VR-based training for EMG prosthetic hands | Unity, C#, VR Interaction Design |
+
 
 ---
 
@@ -74,6 +69,14 @@ Led user interviews, usability testing, and prototyping for an internal producti
 **Design:** Figma, Prototyping, Wireframing  
 **Data Analysis:** R, Python, SPSS, Statistical Analysis  
 **Collaboration:** Git
+
+---
+## Resume
+[→ View Resume](Resume/Resume.pdf)
+
+---
+## Curriculum Vitae
+[→ View Curriculum Vitae](CV/DanielDelgado-CV.pdf)
 
 ---
 
