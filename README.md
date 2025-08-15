@@ -11,7 +11,7 @@ This repository contains a collection of professional and academic projects, inc
 
 ## 📖 About
 
-Daniel Delgado is a user experience researcher from Gainesville, Florida, with over six years of experience designing and developing systems to enhance human–computer interaction. He earned his Bachelor of Science in Computer Engineering from Florida State University in 2019 and his Doctor of Philosophy in Computer Science from the University of Florida in 2025.
+Daniel Delgado is a user experience researcher residing in Oceanside, California, with over six years of experience designing and developing systems to enhance human–computer interaction. He earned his Bachelor of Science in Computer Engineering from Florida State University in 2019 and his Doctor of Philosophy in Computer Science from the University of Florida in 2025.
 
 ---
 
