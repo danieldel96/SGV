@@ -32,7 +32,7 @@ Daniel Delgado is a user experience researcher residing in Oceanside, California
 2. Understanding User Needs for Task Guidance Systems Through the Lens of Cooking [→ View Publication](Publications/Understanding-User-Needs.pdf)
 4. Evaluation of shared-gaze visualizations for virtual assembly tasks [→ View Publication](Publications/Evaluation-of-SGV.pdf)
 
-See more... [→ View Publications](/Portfolio/tree/main/Publications/)
+See more... [→ View Publications](https://github.com/danieldel96/Portfolio/tree/main/Publications)
 
 ___
 
@@ -43,7 +43,7 @@ ___
 Unity, MRTK, C#, HoloLens 2, Eye-tracking  
 **Summary:**  
 Developed a real-time shared-gaze system for collaborative industrial tasks. Conducted **60+ study sessions**, resulting in publications at **IEEE VR 2024** (*Best Poster Honorable Mention*) and **IEEE ISMAR 2025**
-**[→ View Project Folder](/Portfolio/Projects/Shared-Gaze-Visualizations/)**
+**[→ View Project Folder](https://github.com/danieldel96/Portfolio/tree/main/Projects/Shared-Gaze-Visualizations)**
 
 ___
 
@@ -52,7 +52,7 @@ ___
 Unity, C#, HTC Vive Pro 2 Virtual Reality
 **Summary:**  
 Designed and evaluated a VR-based training tool for EMG-controlled prosthetic hands. Conducted usability testing and performance analysis with **100+ hours** of user trials.  
-**[→ View Project Folder](/Portfolio/Projects/EMG-Based-Human-Machine-Interface/)**
+**[→ View Project Folder](https://github.com/danieldel96/Portfolio/tree/main/Projects/EMG-Based-Human-Machine-Interface)**
 
 ---
 ### **3. Augmented Reality Task Guidance**
@@ -67,7 +67,7 @@ ___
 TensorFlow, CUDA, Python, High-Performance Computing
 **Summary:** 
 Designed multi-modal convolutional neural network machine learning algorithms trained on audio/visual data to detect and classify real-time user facial expressions and emotions. Also developed methods for efficient feature extraction.
-**[→ View Project Folder](/Portfolio/Projects/Machine-Learning-Affect-Detection/)**
+**[→ View Project Folder](https://github.com/danieldel96/Portfolio/tree/main/Projects/Machine-Learning-Affect-Detection)**
 ___
 
 ## 📂 Projects
