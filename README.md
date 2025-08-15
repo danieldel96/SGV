@@ -100,7 +100,7 @@ ___
 
 ---
 ## Teaching Materials
-[→ View Teaching Materials](/Teaching/)
+[→ View Teaching Materials](/Portfolio/Teaching/)
 
 ___
 
