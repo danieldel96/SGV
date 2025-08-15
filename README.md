@@ -51,6 +51,12 @@ Designed and evaluated a VR-based training tool for EMG-controlled prosthetic ha
 **[→ View Project Folder](projects/vr-prosthetic-training/)**
 
 ---
+### **3. Augmented Reality Task Guidance**
+**Tech:** Unity, HoloLens 2
+**Summary:**
+Developed a multi-modal augmented reality system to guide users through complex cooking tasks while adpating to their needs. Additionally, provided a set of design guidelines and recommendations for future systems.
+**[→ View Project Folder](projects/vr-prosthetic-training/)**
+___
 
 ## 📂 Projects
 
@@ -58,7 +64,8 @@ Designed and evaluated a VR-based training tool for EMG-controlled prosthetic ha
 |---------|-------------|---------------|
 | Shared-Gaze Visualization in AR | Full-stack AR system for collaborative industrial tasks | Unity, MRTK, C#, UX Research |
 | EMG-Based Human-Machine Interaction | VR-based training for EMG prosthetic hands | Unity, C#, VR Interaction Design |
-| Affect Detection | Machine learning tools for analyzing user emotion through multi-modal techniques| Python, TensorFlow, Audio/Video Dataset|
+| Augmented Reality Task Guidance | Multi-modal AR system for guiding users through complex tasks | Unity, C#, Contextual Inquiry, Qualitative Analysis |
+| Affect Detection | Machine learning tools for analyzing user emotion through multi-modal techniques | Python, TensorFlow, Audio/Video Dataset |
 
 
 ---
