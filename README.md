@@ -56,7 +56,7 @@ Designed and evaluated a VR-based training tool for EMG-controlled prosthetic ha
 **Summary:**
 Developed a multi-modal augmented reality system to guide users through complex cooking tasks while adpating to their needs. Additionally, provided a set of design guidelines and recommendations for future systems.
 ___
-### **4. Multi-Modal Affect Detection***
+### **4. Multi-Modal Affect Detection**
 **Tech:** TensorFlow, CUDA, Python, High-Performance Computing
 **Summary:**
 Designed multi-modal convolutional neural network machine learning algorithms trained on audio/visual data to detect and classify real-time user facial expressions and emotions. Also developed methods for efficient feature extraction.
