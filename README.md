@@ -75,7 +75,7 @@ ___
 | Project | Description | Skills / Tech |
 |---------|-------------|---------------|
 | Shared-Gaze Visualization in AR | Full-stack AR system for collaborative industrial tasks | Unity, MRTK, C#, UX Research |
-| EMG-Based Human-Machine Interaction | VR-based training for EMG prosthetic hands | Unity, C#, VR Interaction Design |
+| EMG-Based Human-Machine Interaction | VR-based training for EMG prosthetic hands | Unity, C#, C++, C, Python, Matlab, VR Interaction Design, Delsys |
 | Augmented Reality Task Guidance | Multi-modal AR system for guiding users through complex tasks | Unity, C#, Contextual Inquiry, Qualitative Analysis |
 | Affect Detection | Machine learning tools for analyzing user emotion through multi-modal techniques | Python, TensorFlow, Audio/Video Dataset |
 
@@ -101,6 +101,7 @@ ___
 ---
 ## Teaching Materials
 [→ View Materials](Teaching/)
+
 ___
 
 ## 📬 Contact
