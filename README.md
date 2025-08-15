@@ -92,11 +92,11 @@ ___
 
 ---
 ## Resume
-[→ View Resume](Resume/Resume.pdf)
+[→ View Resume](/Resume/Resume.pdf)
 
 ---
 ## Curriculum Vitae
-[→ View Curriculum Vitae](CV/DanielDelgado-CV.pdf)
+[→ View Curriculum Vitae](/CV/DanielDelgado-CV.pdf)
 
 ---
 ## Teaching Materials
