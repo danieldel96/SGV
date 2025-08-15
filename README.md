@@ -58,6 +58,7 @@ Designed and evaluated a VR-based training tool for EMG-controlled prosthetic ha
 |---------|-------------|---------------|
 | Shared-Gaze Visualization in AR | Full-stack AR system for collaborative industrial tasks | Unity, MRTK, C#, UX Research |
 | EMG-Based Human-Machine Interaction | VR-based training for EMG prosthetic hands | Unity, C#, VR Interaction Design |
+| Affect Detection | Machine learning tools for analyzing user emotion through multi-modal techniques| Python, TensorFlow, Audio/Video Dataset|
 
 
 ---
