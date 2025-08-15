@@ -32,7 +32,7 @@ Daniel Delgado is a user experience researcher residing in Oceanside, California
 4. Evaluation of shared-gaze visualizations for virtual assembly tasks [→ View Publication](Publications/Evaluation-of-SGV.pdf)
 
 
-__
+___
 
 ## 🌟 Projects
 
@@ -52,16 +52,12 @@ Designed and evaluated a VR-based training tool for EMG-controlled prosthetic ha
 
 ---
 
-
-
----
-
 ## 📂 Full Project List
 
 | Project | Description | Skills / Tech |
 |---------|-------------|---------------|
 | Shared-Gaze Visualization in AR | Full-stack AR system for collaborative industrial tasks | Unity, MRTK, C#, UX Research |
-| VR Prosthetic Training Platform | VR-based training for EMG prosthetic hands | Unity, C#, VR Interaction Design |
+| EMG-Based Human-Machine Interaction | VR-based training for EMG prosthetic hands | Unity, C#, VR Interaction Design |
 
 
 ---
@@ -76,9 +72,11 @@ Designed and evaluated a VR-based training tool for EMG-controlled prosthetic ha
 
 ---
 ## Resume
+[→ View Resume](Resume/Resume.pdf)
 
 ---
 ## Curriculum Vitae
+[→ View Curriculum Vitae](CV/DanielDelgado-CV.pdf)
 
 ---
 
