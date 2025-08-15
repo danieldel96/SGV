@@ -55,7 +55,6 @@ Designed and evaluated a VR-based training tool for EMG-controlled prosthetic ha
 **Tech:** Unity, HoloLens 2
 **Summary:**
 Developed a multi-modal augmented reality system to guide users through complex cooking tasks while adpating to their needs. Additionally, provided a set of design guidelines and recommendations for future systems.
-**[→ View Project Folder](projects/vr-prosthetic-training/)**
 ___
 
 ## 📂 Projects
