@@ -50,7 +50,7 @@ ___
 Unity, C#, Oculus VR
 **Summary:**  
 Designed and evaluated a VR-based training tool for EMG-controlled prosthetic hands. Conducted usability testing and performance analysis with **100+ hours** of user trials.  
-**[→ View Project Folder](Projects/EMG-Based-Machine-Interface/)**
+**[→ View Project Folder](Projects/EMG-Based-Human-Machine-Interface/)**
 
 ---
 ### **3. Augmented Reality Task Guidance**
@@ -84,8 +84,8 @@ ___
 
 **Research:** UX Research, Eye-tracking Studies, Usability Testing, Experimental Design  
 **Development:** Unity, MRTK, C#, VR/AR Interaction Design  
-**Design:** Figma, Prototyping, Wireframing  
-**Data Analysis:** R, Python, SPSS, Statistical Analysis  
+**Design:** Figma, Prototyping, Wireframing, Usability Testing
+**Data Analysis:** R, Python, RStudio, Matlab, Statistical Analysis, ArtANOVA
 **Collaboration:** Git
 
 ---
