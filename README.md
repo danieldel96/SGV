@@ -30,7 +30,7 @@ Daniel Delgado is a user experience researcher residing in Oceanside, California
 
 __
 
-## 🌟 Project Highlights
+## 🌟 Projects
 
 ### **1. Shared-Gaze Visualization in AR**
 **Tech:** Unity, MRTK, C#, HoloLens 2, Eye-tracking  
@@ -48,11 +48,7 @@ Designed and evaluated a VR-based training tool for EMG-controlled prosthetic ha
 
 ---
 
-### **3. UX Case Study – Workplace App**
-**Tech:** Figma, UX Research, Wireframing  
-**Summary:**  
-Led user interviews, usability testing, and prototyping for an internal productivity tool used by a distributed team.  
-**[→ View Project Folder](projects/workplace-app/)**
+
 
 ---
 
@@ -62,8 +58,7 @@ Led user interviews, usability testing, and prototyping for an internal producti
 |---------|-------------|---------------|
 | Shared-Gaze Visualization in AR | Full-stack AR system for collaborative industrial tasks | Unity, MRTK, C#, UX Research |
 | VR Prosthetic Training Platform | VR-based training for EMG prosthetic hands | Unity, C#, VR Interaction Design |
-| UX Case Study – Workplace App | Internal productivity tool research & design | Figma, Usability Testing, Wireframing |
-| [Add more...] | ... | ... |
+
 
 ---
 
@@ -74,6 +69,12 @@ Led user interviews, usability testing, and prototyping for an internal producti
 **Design:** Figma, Prototyping, Wireframing  
 **Data Analysis:** R, Python, SPSS, Statistical Analysis  
 **Collaboration:** Git
+
+---
+## Resume
+
+---
+## Curriculum Vitae
 
 ---
 
