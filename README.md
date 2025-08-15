@@ -48,7 +48,7 @@ ___
 **Tech:** Unity, C#, Oculus VR  
 **Summary:**  
 Designed and evaluated a VR-based training tool for EMG-controlled prosthetic hands. Conducted usability testing and performance analysis with **100+ hours** of user trials.  
-**[→ View Project Folder](projects/EMG-Based-Machine-Interface/)**
+**[→ View Project Folder](Projects/EMG-Based-Machine-Interface/)**
 
 ---
 ### **3. Augmented Reality Task Guidance**
@@ -60,7 +60,7 @@ ___
 **Tech:** TensorFlow, CUDA, Python, High-Performance Computing
 **Summary:**
 Designed multi-modal convolutional neural network machine learning algorithms trained on audio/visual data to detect and classify real-time user facial expressions and emotions. Also developed methods for efficient feature extraction.
-**[→ View Project Folder](projects/Machine-Learning-Affect-Detection/)**
+**[→ View Project Folder](Projects/Machine-Learning-Affect-Detection/)**
 ___
 
 ## 📂 Projects
