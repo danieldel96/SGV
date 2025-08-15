@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:pPr><w:pStyle w:val="code"/></w:pPr><w:r><w:t><![CDATA[classdef dcApp < matlab.apps.AppBase
+
+    % Properties that correspond to app components
+    properties (Access = public)
+        UIFigure                  matlab.ui.Figure
+        DirectControlLabel        matlab.ui.control.Label
+        StartButton               matlab.ui.control.Button
+        StopButton                matlab.ui.control.Button
+        ACE20Label                matlab.ui.control.Label
+        SaveDataPanel             matlab.ui.container.Panel
+        EnableCheckBox            matlab.ui.control.CheckBox
+        FileNameEditFieldLabel    matlab.ui.control.Label
+        FileNameEditField         matlab.ui.control.EditField
+        ExtensionDropDownLabel    matlab.ui.control.Label
+        ExtensionDropDown         matlab.ui.control.DropDown
+        InputThresholdsPanel      matlab.ui.container.Panel
+        CoContractionSliderLabel  matlab.ui.control.Label
+        CoContractionSlider       matlab.ui.control.Slider
+        GraspLowerSliderLabel     matlab.ui.control.Label
+        GraspLowerSlider          matlab.ui.control.Slider
+        WristLowerSliderLabel     matlab.ui.control.Label
+        WristLowerSlider          matlab.ui.control.Slider
+        WristThreshLabel          matlab.ui.control.NumericEditField
+        GraspThreshLabel          matlab.ui.control.NumericEditField
+        CoThreshLabel             matlab.ui.control.NumericEditField
+        OutputPanel               matlab.ui.container.Panel
+        GainSliderLabel           matlab.ui.control.Label
+        GainSlider                matlab.ui.control.Slider
+        GainLabel                 matlab.ui.control.NumericEditField
+        NeuromuscularRehabilitationEngineeringLaboratoryLabel  matlab.ui.control.Label
+        ElapsedTimesLabel         matlab.ui.control.Label
+        ElapsedTime               matlab.ui.control.Label
+        StatusLabel               matlab.ui.control.Label
+        StatusToChange            matlab.ui.control.Label
+    end
+
+
+
+    methods (Access = private)
+
+        % Button pushed function: StartButton
+        function StartButtonPushed(app, event)
+            app.StatusToChange.Text = 'Setting Up';
+            
+            % Setup DAQ Variables
+            global d; % global variables to be used in StopButton callback
+            global d2;
+            
+            d = daq.createSession('ni');
+            d2 = daq.createSession('ni'); 
+            
+            dList = daq.getDevices;
+            deviceID = dList.ID;
+            measType = "Voltage";
+            
+            nameIn1 = "ai0"; % grasp Open
+            nameIn2 = "ai1"; % grasp close
+            
+            nameOut1 = "ao0"; % wristP
+            nameOut2 = "ao1"; % wristS
+            nameOut3 = "ao2"; % graspC
+            nameOut4 = "ao3"; % graspO
+            
+            
+            % add inputs and outputs
+            addAnalogInputChannel(d,deviceID,nameIn1,measType);
+            addAnalogInputChannel(d,deviceID,nameIn2,measType);
+            
+            addAnalogOutputChannel(d2,deviceID,nameOut1,measType); % wristP
+            addAnalogOutputChannel(d2,deviceID,nameOut2,measType); % wristS
+            addAnalogOutputChannel(d2,deviceID,nameOut3,measType); % graspC
+            addAnalogOutputChannel(d2,deviceID,nameOut4,measType); % graspO
+            
+            % Declarations
+            Fs = 3000; % sampling rate (Hz)
+            rate = 100; % output rate (Hz)
+            window = Fs/10; % window size for calculations
+            nSamples = Fs/rate; % chunk size of input readings 
+                       
+           
+            gOL = app.GraspLowerSlider.Value; % lower threshold for grasp open
+            gCL = app.GraspLowerSlider.Value; % lower threshold for grasp close
+            wSL = app.WristLowerSlider.Value; % lower threshold for wrist supination
+            wPL = app.WristLowerSlider.Value; % lower threshold for wrist pronation
+            
+            % Get some variables from GUI
+            co = app.CoContractionSlider.Value; % upper threshold for co-contractions
+            gain = app.GainSlider.Value; 
+            graspTotal = [];
+            wristTotal = [];
+            
+            global dataAll;
+            global timeAll;
+            global dataRecent;
+            global stopButtonPress;
+            
+            stopButtonPress = 0; % flag that triggers when stop button is pressed
+            
+            dataAll = zeros(2*window,2); % creates buffer for later processing
+            dataRecent = zeros(2*window,2);
+            
+            timeAll = [];
+            
+            
+            % Adjust daq variables
+            d.Rate = Fs; % set rate of daq input variable
+            d.NotifyWhenDataAvailableExceeds = nSamples; % notifies when daq variable is in
+            lh = addlistener(d,'DataAvailable',@getDataDC); % listens to daq input variable until there is data avaialble
+            
+            
+            % Co-contraction and DoF switches
+            switchMode = 1; % 1 = below threshold, ready to switch with a co-contraction
+                            % 2 = above threshold, but already switched
+                            % 3 = above threshold, need to switch
+                            
+            wristMode = 1; % start in wrist mode
+            graspMode = 0;
+            
+            %%%%%%%%%%%%%%%%%%%%%%%% Perform real-time operation %%%%%%%%%%%%%%%%%%%%%%%%
+            
+            d.DurationInSeconds = 1000; % indicates duration of real-time operation in seconds (essentially continuous)
+            startBackground(d);
+            app.StatusToChange.Text = 'Running';
+            tic;
+            
+            while d.IsRunning
+                
+                drawnow; % forces the update of dataRecent
+                
+                if stopButtonPress
+                    break;
+                end
+                
+                % Update timer
+                app.ElapsedTime.Text = sprintf('%.1f',toc);
+                
+                graspO = dataRecent(:,1); % recent data from input channel 1
+                graspC = dataRecent(:,2); % recent data from input channel 2
+                
+                graspOAmp = mean(abs(graspO)); % get intensity of channel 1 data
+                graspCAmp = mean(abs(graspC)); % get intensity of channel 2 data
+                
+                % if both signals exceed co-contraction threshold
+                if graspOAmp > co && graspCAmp > co
+                    % and if we need to switch
+                    if switchMode == 1
+                        wristMode = ~wristMode; % change mode
+                        graspMode = ~graspMode;
+                        
+                        switchMode = 2; % indicate that we don't need to switch again
+                    end
+                end
+                
+                % if we're below threshold and just switched
+                if (graspOAmp < co) && (graspCAmp < co) && (switchMode == 2)
+                    switchMode = 1; % indicate that we're ready for another switch
+                end
+                
+                
+                % Output thresholding
+                
+                % states of each output
+                stateGO = 1;
+                stateGC = 1;
+                stateWS = 1;
+                stateWP = 1;
+                
+                % thresholding
+                if graspOAmp < wSL
+                    stateWS = 0;
+                end
+                if graspOAmp < gOL
+                    stateGO = 0;
+                end
+                
+                if graspCAmp < wPL
+                    stateWP = 0;
+                end
+                if graspCAmp < gCL
+                    stateGC = 0;
+                end
+
+                % Failsafe: breaks loop if output voltage exceeds 10.5V to any channel
+                if ((1.1+(gain*graspOAmp)) > 10.5) || ((1.1+(gain*graspCAmp)) > 10.5) || ...
+                        ((0.3 + (gain*graspOAmp)) > 10.5) || ((0.3+(gain*graspCAmp) > 10.5))
+                    fprintf('Failsafe activated\n')
+                    outputSingleScan(d2,[0,0,0,0]);
+                    break;
+                end
+                
+                
+                % Write outputs: [wristPronation,wristSupination,graspClose,graspOpen]      
+                
+                if (graspCAmp - graspOAmp < 0) % if sup/open signal is larger
+                    % supinate wrist or open hand
+                    if wristMode
+                        outputSingleScan(d2,[0,(1.1+(gain*graspOAmp))*stateWS,0,0]);
+                    elseif graspMode
+                        outputSingleScan(d2,[0,0,0,(0.3 + (gain*graspOAmp))*stateGO]);
+                    end
+                    
+                else % if pron/close signal is larger
+                    if wristMode
+                         % pronation
+                        outputSingleScan(d2,[(1.1+(gain*graspCAmp)*stateWP),0,0,0]);
+                    elseif graspMode
+                        % grasp close
+                        outputSingleScan(d2,[0,0,(0.3+(gain*graspCAmp)*stateGC),0]);
+                    end
+                end
+                
+            end
+            
+        end
+
+        % Value changing function: CoContractionSlider
+        function CoContractionSliderValueChanging(app, event)
+            % The following functions pair the slider and the text box (if one is changed, the other follows)
+            
+            val = event.Value;
+            app.CoThreshLabel.Value = val;
+        end
+
+        % Value changing function: GraspLowerSlider
+        function GraspLowerSliderValueChanging(app, event)
+            val = event.Value;
+            app.GraspThreshLabel.Value = val;
+        end
+
+        % Value changing function: WristLowerSlider
+        function WristLowerSliderValueChanging(app, event)
+            val = event.Value;
+            app.WristThreshLabel.Value = val;
+        end
+
+        % Value changing function: GainSlider
+        function GainSliderValueChanging(app, event)
+            val = event.Value;
+            app.GainLabel.Value = val;
+        end
+
+        % Value changed function: CoThreshLabel
+        function CoThreshLabelValueChanged(app, event)
+            value = app.CoThreshLabel.Value;
+            app.CoContractionSlider.Value = value;
+        end
+
+        % Value changed function: WristThreshLabel
+        function WristThreshLabelValueChanged(app, event)
+            value = app.WristThreshLabel.Value;
+            app.WristLowerSlider.Value = value;
+        end
+
+        % Value changed function: GraspThreshLabel
+        function GraspThreshLabelValueChanged(app, event)
+            value = app.GraspThreshLabel.Value;
+            app.GraspLowerSlider.Value = value;
+        end
+
+        % Value changed function: GainLabel
+        function GainLabelValueChanged(app, event)
+            value = app.GainLabel.Value;
+            app.GainSlider.Value = value;
+        end
+
+        % Button pushed function: StopButton
+        function StopButtonPushed(app, event)
+            
+            global d;
+            global d2;
+            global timeAll;
+            global dataAll;
+            global stopButtonPress;
+            outputSingleScan(d2,[0,0,0,0]);
+                        
+            stop(d);
+            stop(d2);
+            
+            Fs = 3000;
+            window = Fs/10;
+            
+            stopButtonPress = 1;
+            
+            app.StatusToChange.Text = 'Stopping';
+            
+            % put the time and data to write in one matrix: dataOut
+            timeWrite = double(timeAll);
+            dataWrite = double(dataAll);
+            dataWrite(1:2*window,:) = [];
+            dataOut = [timeWrite,dataWrite];
+            
+            pause(0.5);
+
+            % export signals
+            if app.EnableCheckBox.Value
+                app.StatusToChange.Text = 'Writing';
+                saveFileName = sprintf('%s%s',app.FileNameEditField.Value,app.ExtensionDropDown.Value);
+                
+                if strcmp(app.ExtensionDropDown.Value,'.mat')
+                    save(saveFileName,'dataOut');
+                else
+                    xlswrite(saveFileName,dataOut);
+                end
+                
+            end
+            
+            % close gui
+            close(app.UIFigure);
+
+        end
+    end
+
+    % App initialization and construction
+    methods (Access = private)
+
+        % Create UIFigure and components
+        function createComponents(app)
+
+            % Create UIFigure
+            app.UIFigure = uifigure;
+            app.UIFigure.Position = [100 100 621 602];
+            app.UIFigure.Name = 'MATLAB App';
+
+            % Create DirectControlLabel
+            app.DirectControlLabel = uilabel(app.UIFigure);
+            app.DirectControlLabel.HorizontalAlignment = 'center';
+            app.DirectControlLabel.FontSize = 30;
+            app.DirectControlLabel.FontWeight = 'bold';
+            app.DirectControlLabel.Position = [208 545 207 36];
+            app.DirectControlLabel.Text = 'Direct Control';
+
+            % Create StartButton
+            app.StartButton = uibutton(app.UIFigure, 'push');
+            app.StartButton.ButtonPushedFcn = createCallbackFcn(app, @StartButtonPushed, true);
+            app.StartButton.BackgroundColor = [0 1 0];
+            app.StartButton.Position = [419 20 75 35];
+            app.StartButton.Text = 'Start';
+
+            % Create StopButton
+            app.StopButton = uibutton(app.UIFigure, 'push');
+            app.StopButton.ButtonPushedFcn = createCallbackFcn(app, @StopButtonPushed, true);
+            app.StopButton.BackgroundColor = [1 0 0];
+            app.StopButton.Position = [516 20 75 35];
+            app.StopButton.Text = 'Stop';
+
+            % Create ACE20Label
+            app.ACE20Label = uilabel(app.UIFigure);
+            app.ACE20Label.Position = [16 13 50 22];
+            app.ACE20Label.Text = 'ACE 2.0';
+
+            % Create SaveDataPanel
+            app.SaveDataPanel = uipanel(app.UIFigure);
+            app.SaveDataPanel.Title = 'Save Data';
+            app.SaveDataPanel.FontWeight = 'bold';
+            app.SaveDataPanel.FontSize = 18;
+            app.SaveDataPanel.Position = [47 54 260 148];
+
+            % Create EnableCheckBox
+            app.EnableCheckBox = uicheckbox(app.SaveDataPanel);
+            app.EnableCheckBox.Text = 'Enable';
+            app.EnableCheckBox.Position = [18 80 59 22];
+
+            % Create FileNameEditFieldLabel
+            app.FileNameEditFieldLabel = uilabel(app.SaveDataPanel);
+            app.FileNameEditFieldLabel.HorizontalAlignment = 'right';
+            app.FileNameEditFieldLabel.Position = [18 47 60 22];
+            app.FileNameEditFieldLabel.Text = 'File Name';
+
+            % Create FileNameEditField
+            app.FileNameEditField = uieditfield(app.SaveDataPanel, 'text');
+            app.FileNameEditField.Position = [93 47 100 22];
+
+            % Create ExtensionDropDownLabel
+            app.ExtensionDropDownLabel = uilabel(app.SaveDataPanel);
+            app.ExtensionDropDownLabel.HorizontalAlignment = 'right';
+            app.ExtensionDropDownLabel.Position = [20 10 58 22];
+            app.ExtensionDropDownLabel.Text = 'Extension';
+
+            % Create ExtensionDropDown
+            app.ExtensionDropDown = uidropdown(app.SaveDataPanel);
+            app.ExtensionDropDown.Items = {'.mat', '.csv', '.xlsx', ''};
+            app.ExtensionDropDown.Position = [93 10 100 22];
+            app.ExtensionDropDown.Value = '.mat';
+
+            % Create InputThresholdsPanel
+            app.InputThresholdsPanel = uipanel(app.UIFigure);
+            app.InputThresholdsPanel.Title = 'Input Thresholds';
+            app.InputThresholdsPanel.FontWeight = 'bold';
+            app.InputThresholdsPanel.FontSize = 18;
+            app.InputThresholdsPanel.Position = [46 221 392 272];
+
+            % Create CoContractionSliderLabel
+            app.CoContractionSliderLabel = uilabel(app.InputThresholdsPanel);
+            app.CoContractionSliderLabel.HorizontalAlignment = 'right';
+            app.CoContractionSliderLabel.FontSize = 15;
+            app.CoContractionSliderLabel.FontWeight = 'bold';
+            app.CoContractionSliderLabel.Position = [264 214 115 22];
+            app.CoContractionSliderLabel.Text = 'Co-Contraction';
+
+            % Create CoContractionSlider
+            app.CoContractionSlider = uislider(app.InputThresholdsPanel);
+            app.CoContractionSlider.Limits = [0 5];
+            app.CoContractionSlider.Orientation = 'vertical';
+            app.CoContractionSlider.ValueChangingFcn = createCallbackFcn(app, @CoContractionSliderValueChanging, true);
+            app.CoContractionSlider.Position = [320 59 3 150];
+            app.CoContractionSlider.Value = 2.5;
+
+            % Create GraspLowerSliderLabel
+            app.GraspLowerSliderLabel = uilabel(app.InputThresholdsPanel);
+            app.GraspLowerSliderLabel.HorizontalAlignment = 'right';
+            app.GraspLowerSliderLabel.FontSize = 15;
+            app.GraspLowerSliderLabel.FontWeight = 'bold';
+            app.GraspLowerSliderLabel.Position = [133 216 106 22];
+            app.GraspLowerSliderLabel.Text = 'Grasp - Lower';
+
+            % Create GraspLowerSlider
+            app.GraspLowerSlider = uislider(app.InputThresholdsPanel);
+            app.GraspLowerSlider.Limits = [0 5];
+            app.GraspLowerSlider.Orientation = 'vertical';
+            app.GraspLowerSlider.ValueChangingFcn = createCallbackFcn(app, @GraspLowerSliderValueChanging, true);
+            app.GraspLowerSlider.Position = [174 60 3 150];
+            app.GraspLowerSlider.Value = 1;
+
+            % Create WristLowerSliderLabel
+            app.WristLowerSliderLabel = uilabel(app.InputThresholdsPanel);
+            app.WristLowerSliderLabel.HorizontalAlignment = 'center';
+            app.WristLowerSliderLabel.FontSize = 15;
+            app.WristLowerSliderLabel.FontWeight = 'bold';
+            app.WristLowerSliderLabel.Position = [13 216 100 22];
+            app.WristLowerSliderLabel.Text = 'Wrist - Lower';
+
+            % Create WristLowerSlider
+            app.WristLowerSlider = uislider(app.InputThresholdsPanel);
+            app.WristLowerSlider.Limits = [0 5];
+            app.WristLowerSlider.Orientation = 'vertical';
+            app.WristLowerSlider.ValueChangingFcn = createCallbackFcn(app, @WristLowerSliderValueChanging, true);
+            app.WristLowerSlider.Position = [46 60 3 150];
+            app.WristLowerSlider.Value = 1;
+
+            % Create WristThreshLabel
+            app.WristThreshLabel = uieditfield(app.InputThresholdsPanel, 'numeric');
+            app.WristThreshLabel.ValueChangedFcn = createCallbackFcn(app, @WristThreshLabelValueChanged, true);
+            app.WristThreshLabel.HorizontalAlignment = 'center';
+            app.WristThreshLabel.Position = [39 14 49 22];
+            app.WristThreshLabel.Value = 1;
+
+            % Create GraspThreshLabel
+            app.GraspThreshLabel = uieditfield(app.InputThresholdsPanel, 'numeric');
+            app.GraspThreshLabel.ValueChangedFcn = createCallbackFcn(app, @GraspThreshLabelValueChanged, true);
+            app.GraspThreshLabel.HorizontalAlignment = 'center';
+            app.GraspThreshLabel.Position = [163 14 47 22];
+            app.GraspThreshLabel.Value = 1;
+
+            % Create CoThreshLabel
+            app.CoThreshLabel = uieditfield(app.InputThresholdsPanel, 'numeric');
+            app.CoThreshLabel.ValueChangedFcn = createCallbackFcn(app, @CoThreshLabelValueChanged, true);
+            app.CoThreshLabel.HorizontalAlignment = 'center';
+            app.CoThreshLabel.Position = [320 14 46 22];
+            app.CoThreshLabel.Value = 2.5;
+
+            % Create OutputPanel
+            app.OutputPanel = uipanel(app.UIFigure);
+            app.OutputPanel.Title = 'Output';
+            app.OutputPanel.FontWeight = 'bold';
+            app.OutputPanel.FontSize = 18;
+            app.OutputPanel.Position = [467 221 124 272];
+
+            % Create GainSliderLabel
+            app.GainSliderLabel = uilabel(app.OutputPanel);
+            app.GainSliderLabel.HorizontalAlignment = 'center';
+            app.GainSliderLabel.FontSize = 15;
+            app.GainSliderLabel.FontWeight = 'bold';
+            app.GainSliderLabel.Position = [43 214 39 22];
+            app.GainSliderLabel.Text = 'Gain';
+
+            % Create GainSlider
+            app.GainSlider = uislider(app.OutputPanel);
+            app.GainSlider.Limits = [0 5];
+            app.GainSlider.Orientation = 'vertical';
+            app.GainSlider.ValueChangingFcn = createCallbackFcn(app, @GainSliderValueChanging, true);
+            app.GainSlider.Position = [48 56 3 151];
+            app.GainSlider.Value = 1;
+
+            % Create GainLabel
+            app.GainLabel = uieditfield(app.OutputPanel, 'numeric');
+            app.GainLabel.ValueChangedFcn = createCallbackFcn(app, @GainLabelValueChanged, true);
+            app.GainLabel.HorizontalAlignment = 'center';
+            app.GainLabel.Position = [38 14 48 22];
+            app.GainLabel.Value = 1;
+
+            % Create NeuromuscularRehabilitationEngineeringLaboratoryLabel
+            app.NeuromuscularRehabilitationEngineeringLaboratoryLabel = uilabel(app.UIFigure);
+            app.NeuromuscularRehabilitationEngineeringLaboratoryLabel.FontAngle = 'italic';
+            app.NeuromuscularRehabilitationEngineeringLaboratoryLabel.Position = [165 515 295 22];
+            app.NeuromuscularRehabilitationEngineeringLaboratoryLabel.Text = 'Neuromuscular Rehabilitation Engineering Laboratory';
+
+            % Create ElapsedTimesLabel
+            app.ElapsedTimesLabel = uilabel(app.UIFigure);
+            app.ElapsedTimesLabel.Position = [338 85 102 22];
+            app.ElapsedTimesLabel.Text = 'Elapsed Time (s): ';
+
+            % Create ElapsedTime
+            app.ElapsedTime = uilabel(app.UIFigure);
+            app.ElapsedTime.Position = [465 85 25 22];
+            app.ElapsedTime.Text = '0';
+
+            % Create StatusLabel
+            app.StatusLabel = uilabel(app.UIFigure);
+            app.StatusLabel.Position = [338 120 43 22];
+            app.StatusLabel.Text = 'Status:';
+
+            % Create StatusToChange
+            app.StatusToChange = uilabel(app.UIFigure);
+            app.StatusToChange.Position = [416 120 133 22];
+            app.StatusToChange.Text = 'Ready';
+        end
+    end
+
+    methods (Access = public)
+
+        % Construct app
+        function app = dcApp
+
+            % Create and configure components
+            createComponents(app)
+
+            % Register the app with App Designer
+            registerApp(app, app.UIFigure)
+
+            if nargout == 0
+                clear app
+            end
+        end
+
+        % Code that executes before app deletion
+        function delete(app)
+
+            % Delete UIFigure when app is deleted
+            delete(app.UIFigure)
+        end
+    end
+end]]></w:t></w:r></w:p></w:body></w:document>

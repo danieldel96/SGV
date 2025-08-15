@@ -1,0 +1,7 @@
+>open visual studio code
+>open server.py
+>open new terminal
+> In terminal: "cd C:\NSF-Project-Files\emg-server-python\Server"
+> In terminal: "dir" to see you are in the current path
+> To run server: "python program.py"
+> If server port error, refer to page 4 in the protocol

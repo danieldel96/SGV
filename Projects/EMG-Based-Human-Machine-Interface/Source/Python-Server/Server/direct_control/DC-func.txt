@@ -1,0 +1,11 @@
+Notes on DC functionality
+-pre-processing:
+    -uses mean absolute value to get intensity
+    graspOAmp = mean(abs(graspO)); % get intensity of channel 1 data
+    graspCAmp = mean(abs(graspC)); % get intensity of channel 2 data    
+
+-contraction threshold
+    -based on arbitrary slider
+    -maybe 75% of mvc?
+    co = app.CoContractionSlider.Value; % upper threshold for co-contractions
+    

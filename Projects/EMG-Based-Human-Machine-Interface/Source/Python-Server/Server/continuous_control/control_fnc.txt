@@ -1,0 +1,113 @@
+function control_fnc()
+    d = evalin('base','all_data');
+%     num_secs = evalin('base','num_secs');
+    count = evalin('base','cnt');
+    num_channels = evalin('base','num_channels');
+
+    buff_size_w = 200;
+    buff_size_mcp = 200;
+    if(count>buff_size_w && count>buff_size_mcp)
+        if(count>=1000)
+             emgs_w = d(1000-buff_size_w+1:1000,:);
+             emgs_mcp = d(1000-buff_size_mcp+1:1000,:);
+        else
+            emgs_w = d(count-buff_size_w+1:count,:);
+            emgs_mcp = d(count-buff_size_mcp+1:count,:);
+        end
+        input_point_w = mean(abs(emgs_w(:,1:4)));
+        input_point_mcp = mean(abs(emgs_mcp(:,1:4)));
+        control_grasp = evalin('base','control_grasp');
+        control_wrist = evalin('base','control_wrist');
+        output_period = evalin('base','output_period')/1000;
+        if(control_grasp)
+            net = evalin('base','grasp_net');
+            new_pos_f = net(input_point_mcp');
+            if(new_pos_f>pi/2)
+                new_pos_f=pi/2;
+            elseif(new_pos_f<0)
+                new_pos_f=0;
+            end
+%             last_pos = evalin('base','last_grasp_pos');
+%             predicted_movement = (new_pos_f-last_pos)/output_period;
+%             assignin('base','last_grasp_pos',new_pos_f)
+%             grasp_velocities = evalin('base','grasp_velocities');
+%             grasp_velocities(2:20) = grasp_velocities(1:19);
+%             grasp_velocities(1) = predicted_movement;
+%             assignin('base','grasp_velocities',grasp_velocities)
+%             predicted_movement = mean(grasp_velocities(1:5));
+%             v_f = predicted_movement;
+            grasp_velocities = evalin('base','grasp_velocities');
+            grasp_velocities(2:20) = grasp_velocities(1:19);
+            grasp_velocities(1) = new_pos_f;
+            assignin('base','grasp_velocities',grasp_velocities)
+            v_f = (mean(grasp_velocities(1:5)) - mean(grasp_velocities(2:6)))/output_period;
+            predicted_movement = v_f;
+            use_threshold = evalin('base','use_threshold');
+            move=1;
+            if(use_threshold)
+                lower_thresh_grasp = evalin('base','lower_thresh_grasp');
+                upper_thresh_grasp = evalin('base','upper_thresh_grasp');
+                if(predicted_movement>lower_thresh_grasp && predicted_movement<upper_thresh_grasp)
+                    predicted_movement=0;
+                    move=0;
+                end
+            end
+            p_f=predicted_movement*0.05;
+            if(predicted_movement>0)
+                calllib('cbw64','cbVOut',1,3,100,0,0);
+                calllib('cbw64','cbVOut',1,2,100,move*(predicted_movement/0.6+0.2),0);
+            else
+                calllib('cbw64','cbVOut',1,2,100,0,0);
+                calllib('cbw64','cbVOut',1,3,100,move*(-predicted_movement/0.6+0.2),0);
+            end
+%             sprintf("Time: %.3f Estimated Motion: %.3f", count/1000, predicted_movement)
+        end
+        if(control_wrist)
+            net = evalin('base','wrist_net');
+            new_pos_w = net(input_point_w');
+            if(new_pos_w>pi/2)
+                new_pos_w=pi/2
+            elseif(new_pos_w<-pi/2)
+                new_pos_w=-pi/2
+            end
+%             last_pos = evalin('base','last_wrist_pos');
+%             predicted_movement = (new_pos_w-last_pos)/output_period;
+%             assignin('base','last_wrist_pos',new_pos_w);
+%             wrist_velocities = evalin('base','wrist_velocities');
+%             wrist_velocities(2:20) = wrist_velocities(1:19);
+%             wrist_velocities(1) = predicted_movement;
+%             assignin('base','wrist_velocities',wrist_velocities);
+%             predicted_movement = mean(wrist_velocities(1:5));
+%             v_w = predicted_movement;
+            wrist_velocities = evalin('base','wrist_velocities');
+            wrist_velocities(2:20) = wrist_velocities(1:19);
+            wrist_velocities(1) = new_pos_w;
+            assignin('base','wrist_velocities',wrist_velocities)
+            v_w = (mean(wrist_velocities(1:3)) - mean(wrist_velocities(2:4)))/output_period;
+            predicted_movement = v_w;
+            use_threshold = evalin('base','use_threshold');
+            move=1;
+            if(use_threshold)
+                lower_thresh_wrist = evalin('base','lower_thresh_wrist');
+                upper_thresh_wrist = evalin('base','upper_thresh_wrist');
+                if(predicted_movement>lower_thresh_wrist && predicted_movement<upper_thresh_wrist)
+                    predicted_movement=0;
+                    move=0;
+                end
+            end
+%             p_w=predicted_movement*0.1;
+            if(predicted_movement>0)
+                calllib('cbw64','cbVOut',1,1,100,0,0);
+                calllib('cbw64','cbVOut',1,0,100,move*(predicted_movement/1.3+1),0);
+            else
+                calllib('cbw64','cbVOut',1,0,100,0,0);
+                calllib('cbw64','cbVOut',1,1,100,move*(-predicted_movement/1.3+1),0);
+            end
+%             sprintf("Time: %.3f Estimated Motion: %.3f", count, predicted_movement)
+        end
+        
+        if(control_wrist && control_grasp)
+            sprintf("Grasp: %.3f %.3f Wrist: %.3f %.3f", new_pos_f, v_f, new_pos_w, v_w)
+        end
+    end
+end
