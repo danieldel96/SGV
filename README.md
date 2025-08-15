@@ -26,6 +26,10 @@ Daniel Delgado is a user experience researcher residing in Oceanside, California
 
 ---
 ## Publications
+### Most Recent Publications
+1. [→ View Project Folder](Projects/Publications/When-is-Self-Gaze-Necessary.pdf)
+2. [→ View Project Folder](Projects/Publications/Understanding-User-Needs.pdf)
+3. [→ View Project Folder](Projects/Publications/Evaluation-of-SGV.pdf)
 
 
 __
