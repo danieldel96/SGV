@@ -52,7 +52,7 @@ Designed and evaluated a VR-based training tool for EMG-controlled prosthetic ha
 
 ---
 
-## 📂 Full Project List
+## 📂 Projects
 
 | Project | Description | Skills / Tech |
 |---------|-------------|---------------|
