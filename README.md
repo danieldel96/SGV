@@ -22,7 +22,8 @@ Daniel Delgado is a user experience researcher residing in Oceanside, California
 4. [Skills & Tools](#-skills--tools)
 5. [Resume](#-resume)
 6. [Curriculum Vitae](#-curriculum-vitae)
-7. [Contact](#-contact)  
+7. [Teaching](#-teaching)
+8. [Contact](#-contact)  
 
 ---
 ## Publications
@@ -97,6 +98,9 @@ ___
 [→ View Curriculum Vitae](CV/DanielDelgado-CV.pdf)
 
 ---
+## Teaching Materials
+[→ View Materials](Teaching/)
+___
 
 ## 📬 Contact
 
