@@ -27,9 +27,9 @@ Daniel Delgado is a user experience researcher residing in Oceanside, California
 ---
 ## Publications
 ### Most Recent Publications
-1. When Is Self-Gaze Helpful? Examining Uni- vs Bi-directional Gaze Visualization in Collocated AR Tasks [→ View Publication](Projects/Publications/When-is-Self-Gaze-Necessary.pdf)
-2. Understanding User Needs for Task Guidance Systems Through the Lens of Cooking [→ View Publication](Projects/Publications/Understanding-User-Needs.pdf)
-4. Evaluation of shared-gaze visualizations for virtual assembly tasks [→ View Publication](Projects/Publications/Evaluation-of-SGV.pdf)
+1. When Is Self-Gaze Helpful? Examining Uni- vs Bi-directional Gaze Visualization in Collocated AR Tasks [→ View Publication](Publications/When-is-Self-Gaze-Necessary.pdf)
+2. Understanding User Needs for Task Guidance Systems Through the Lens of Cooking [→ View Publication](Publications/Understanding-User-Needs.pdf)
+4. Evaluation of shared-gaze visualizations for virtual assembly tasks [→ View Publication](Publications/Evaluation-of-SGV.pdf)
 
 
 __
