@@ -1,0 +1,9 @@
+Artur Bekker:
+Wrote the functions to create telephone key sounds in Part II, and added functionality to telephone buttons with Matt Sabin.
+Wrote informed consent form for A Walk in the Woods, and created recruitment flyer for research study.
+
+Dan Delgado:
+Was responsible for entire completion of Part I: created a digital keyboard, created buttons to play a song or display the song's spectrogram, and produced the song played on the keyboard.
+
+Matt Sabin:
+Wrote code for GUI of telephone program in Part II, and added functionality to telephone buttons with Artur Bekker. Also decoded phone numbers for Part II.
