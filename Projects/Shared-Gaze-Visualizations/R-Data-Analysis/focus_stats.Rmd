@@ -1,0 +1,238 @@
+---
+title: "focus_stats"
+output: html_document
+date: "2024-11-08"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+```{R Assertive}
+library(tidyverse)
+library(agricolae)
+library(car)
+library(FSA)  # For non-parametric tests and post hoc analysis
+library(dunn.test)  # For Dunn's post hoc test
+
+# Read the CSV file
+data <- read.csv("focus_analysis_results.csv")
+
+# Convert 'study' and 'condition' to factors
+data$study <- as.factor(data$study)
+data$condition <- as.factor(data$condition)
+
+# Rename conditions for readability
+condition_labels <- c("1" = "Bi-directional Gaze Ray",
+                      "2" = "Uni-directional Gaze Ray",
+                      "3" = "Bi-directional Gaze Hover",
+                      "4" = "Uni-directional Gaze Hover")
+data$condition <- factor(data$condition, levels = names(condition_labels), labels = condition_labels)
+
+# Summary statistics for plotting, with updated labels
+summary_data <- data %>%
+  group_by(condition) %>%
+  summarise(
+    mean_eye_contact = mean(`total.eye.contact.time`, na.rm = TRUE),
+    se_eye_contact = sd(`total.eye.contact.time`, na.rm = TRUE) / sqrt(n()),
+    mean_shared_focus = mean(`total.shared.focus`, na.rm = TRUE),
+    se_shared_focus = sd(`total.shared.focus`, na.rm = TRUE) / sqrt(n()),
+    mean_focus_instances = mean(`focus.instances`, na.rm = TRUE),
+    se_focus_instances = sd(`focus.instances`, na.rm = TRUE) / sqrt(n()),
+    mean_eye_contact_instances = mean(`eye.contact.instances`, na.rm = TRUE),
+    se_eye_contact_instances = sd(`eye.contact.instances`, na.rm = TRUE) / sqrt(n()),
+    mean_individual_rotation_parent_time = mean(`individual_rotation_parent_time`, na.rm = TRUE),
+    se_individual_rotation_parent_time = sd(`individual_rotation_parent_time`, na.rm = TRUE) / sqrt(n()),
+    mean_individual_rotation_parent_count = mean(`individual_rotation_parent_count`, na.rm = TRUE),
+    se_individual_rotation_parent_count = sd(`individual_rotation_parent_count`, na.rm = TRUE) / sqrt(n())
+  )
+
+# Bar chart for "total eye contact time" across conditions
+ggplot(summary_data, aes(x = condition, y = mean_eye_contact, fill = condition)) +
+  geom_bar(stat = "identity", color = "black") +
+  geom_errorbar(aes(ymin = mean_eye_contact - se_eye_contact, ymax = mean_eye_contact + se_eye_contact), width = 0.2) +
+  labs(title = "Total Eye Contact Time Across Conditions", x = "Condition", y = "Mean Eye Contact Time (seconds)") +
+  theme_minimal()
+
+# Bar chart for "total shared focus" across conditions
+ggplot(summary_data, aes(x = condition, y = mean_shared_focus, fill = condition)) +
+  geom_bar(stat = "identity", color = "black") +
+  geom_errorbar(aes(ymin = mean_shared_focus - se_shared_focus, ymax = mean_shared_focus + se_shared_focus), width = 0.2) +
+  labs(title = "Total Shared Focus Across Conditions", x = "Condition", y = "Mean Shared Focus (seconds)") +
+  theme_minimal()
+
+# Bar chart for "focus instances" across conditions
+ggplot(summary_data, aes(x = condition, y = mean_focus_instances, fill = condition)) +
+  geom_bar(stat = "identity", color = "black") +
+  geom_errorbar(aes(ymin = mean_focus_instances - se_focus_instances, ymax = mean_focus_instances + se_focus_instances), width = 0.2) +
+  labs(title = "Focus Instances Across Conditions", x = "Condition", y = "Mean Focus Instances") +
+  theme_minimal()
+
+# Bar chart for "eye contact instances" across conditions
+ggplot(summary_data, aes(x = condition, y = mean_eye_contact_instances, fill = condition)) +
+  geom_bar(stat = "identity", color = "black") +
+  geom_errorbar(aes(ymin = mean_eye_contact_instances - se_eye_contact_instances, ymax = mean_eye_contact_instances + se_eye_contact_instances), width = 0.2) +
+  labs(title = "Eye Contact Instances Across Conditions", x = "Condition", y = "Mean Eye Contact Instances") +
+  theme_minimal()
+
+# Bar chart for individual focus time on partner ("rotation_parent" relabeled)
+ggplot(summary_data, aes(x = condition, y = mean_individual_rotation_parent_time, fill = condition)) +
+  geom_bar(stat = "identity", color = "black") +
+  geom_errorbar(aes(ymin = mean_individual_rotation_parent_time - se_individual_rotation_parent_time, 
+                    ymax = mean_individual_rotation_parent_time + se_individual_rotation_parent_time), width = 0.2) +
+  labs(title = "Time Focusing on Partner Across Conditions", x = "Condition", y = "Mean Time Focusing on Partner (seconds)") +
+  theme_minimal()
+
+# Bar chart for individual focus count on partner ("rotation_parent" relabeled)
+ggplot(summary_data, aes(x = condition, y = mean_individual_rotation_parent_count, fill = condition)) +
+  geom_bar(stat = "identity", color = "black") +
+  geom_errorbar(aes(ymin = mean_individual_rotation_parent_count - se_individual_rotation_parent_count, 
+                    ymax = mean_individual_rotation_parent_count + se_individual_rotation_parent_count), width = 0.2) +
+  labs(title = "Instances Focusing on Partner Across Conditions", x = "Condition", y = "Mean Instances Focusing on Partner") +
+  theme_minimal()
+
+# Check assumptions for ANOVA (normality and homogeneity of variance)
+
+# Shapiro-Wilk test for normality on each variable
+shapiro_eye_contact <- shapiro.test(data$total.eye.contact.time)
+shapiro_shared_focus <- shapiro.test(data$total.shared.focus)
+shapiro_focus_instances <- shapiro.test(data$focus.instances)
+shapiro_eye_contact_instances <- shapiro.test(data$eye.contact.instances)
+shapiro_rotation_time <- shapiro.test(data$individual_rotation_parent_time)
+shapiro_rotation_count <- shapiro.test(data$individual_rotation_parent_count)
+
+# Levene's test for homogeneity of variance
+levene_eye_contact <- leveneTest(total.eye.contact.time ~ condition, data = data)
+levene_shared_focus <- leveneTest(total.shared.focus ~ condition, data = data)
+levene_focus_instances <- leveneTest(focus.instances ~ condition, data = data)
+levene_eye_contact_instances <- leveneTest(eye.contact.instances ~ condition, data = data)
+levene_rotation_time <- leveneTest(individual_rotation_parent_time ~ condition, data = data)
+levene_rotation_count <- leveneTest(individual_rotation_parent_count ~ condition, data = data)
+
+# Display test results
+print("Shapiro-Wilk Test Results for Normality:")
+print(shapiro_eye_contact)
+print(shapiro_shared_focus)
+print(shapiro_focus_instances)
+print(shapiro_eye_contact_instances)
+print(shapiro_rotation_time)
+print(shapiro_rotation_count)
+
+print("Levene's Test Results for Homogeneity of Variance:")
+print(levene_eye_contact)
+print(levene_shared_focus)
+print(levene_focus_instances)
+print(levene_eye_contact_instances)
+print(levene_rotation_time)
+print(levene_rotation_count)
+
+
+
+# Repeat the same conditional ANOVA checks for each variable
+if (shapiro_rotation_count$p.value > 0.05 & levene_rotation_count$`Pr(>F)`[1] > 0.05) {
+  rotation_count_aov <- aov(individual_rotation_parent_count ~ condition + study, data = data)
+  print(summary(rotation_count_aov))
+  rotation_count_posthoc <- TukeyHSD(rotation_count_aov, "condition")
+  print("Post hoc results for Instances Focusing on Partner (Tukey's HSD):")
+  print(rotation_count_posthoc)
+} else {
+  rotation_count_friedman <- friedman.test(individual_rotation_parent_count ~ condition | study, data = data)
+  print("Friedman's test for Instances Focusing on Partner:")
+  print(rotation_count_friedman)
+  rotation_count_dunn <- dunn.test(data$individual_rotation_parent_count, data$condition, method = "bonferroni")
+  print("Post hoc results for Instances Focusing on Partner (Dunn's test):")
+  print(rotation_count_dunn)
+}
+
+if (shapiro_rotation_time$p.value > 0.05 & levene_rotation_time$`Pr(>F)`[1] > 0.05) {
+  rotation_time_aov <- aov(individual_rotation_parent_time ~ condition + study, data = data)
+  print(summary(rotation_time_aov))
+  rotation_time_posthoc <- TukeyHSD(rotation_time_aov, "condition")
+  print("Post hoc results for Time Focusing on Partner (Tukey's HSD):")
+  print(rotation_time_posthoc)
+} else {
+  rotation_time_friedman <- friedman.test(individual_rotation_parent_time ~ condition | study, data = data)
+  print("Friedman's test for Time Focusing on Partner:")
+  print(rotation_time_friedman)
+  rotation_time_dunn <- dunn.test(data$individual_rotation_parent_time, data$condition, method = "bonferroni")
+  print("Post hoc results for Time Focusing on Partner (Dunn's test):")
+  print(rotation_time_dunn)
+}
+
+if (shapiro_focus_instances$p.value > 0.05 & levene_focus_instances$`Pr(>F)`[1] > 0.05) {
+  focus_instances_aov <- aov(focus.instances ~ condition + study, data = data)
+  print(summary(focus_instances_aov))
+  focus_instances_posthoc <- TukeyHSD(focus_instances_aov, "condition")
+  print("Post hoc results for Focus Instances (Tukey's HSD):")
+  print(focus_instances_posthoc)
+} else {
+  focus_instances_friedman <- friedman.test(focus.instances ~ condition | study, data = data)
+  print("Friedman's test for shared Focus Instances:")
+  print(focus_instances_friedman)
+  focus_instances_dunn <- dunn.test(data$focus.instances, data$condition, method = "bonferroni")
+  print("Post hoc results for Focus Instances (Dunn's test):")
+  print(focus_instances_dunn)
+}
+
+if (shapiro_shared_focus$p.value > 0.05 & levene_shared_focus$`Pr(>F)`[1] > 0.05) {
+  shared_focus_aov <- aov(total.shared.focus ~ condition + study, data = data)
+  print("Running ANOVA Shared TIME focus")
+  print(summary(shared_focus_aov))
+  shared_focus_posthoc <- TukeyHSD(shared_focus_aov, "condition")
+  print("Post hoc results for Shared Focus (Tukey's HSD):")
+  print(shared_focus_posthoc)
+} else {
+  shared_focus_friedman <- friedman.test(total.shared.focus ~ condition | study, data = data)
+  print("Friedman's test for Shared Focus:")
+  print(shared_focus_friedman)
+  shared_focus_dunn <- dunn.test(data$total.shared.focus, data$condition, method = "bonferroni")
+  print("Post hoc results for Shared Focus (Dunn's test):")
+  print(shared_focus_dunn)
+}
+
+if (shapiro_eye_contact_instances$p.value > 0.05 & levene_eye_contact_instances$`Pr(>F)`[1] > 0.05) {
+  eye_contact_instances_aov <- aov(eye.contact.instances ~ condition + study, data = data)
+  print(summary(eye_contact_instances_aov))
+  eye_contact_instances_posthoc <- TukeyHSD(eye_contact_instances_aov, "condition")
+  print("Post hoc results for Eye Contact Instances (Tukey's HSD):")
+  print(eye_contact_instances_posthoc)
+} else {
+  eye_contact_instances_friedman <- friedman.test(eye.contact.instances ~ condition | study, data = data)
+  print("Friedman's test for Eye Contact Instances:")
+  print(eye_contact_instances_friedman)
+  eye_contact_instances_dunn <- dunn.test(data$eye.contact.instances, data$condition, method = "bonferroni")
+  print("Post hoc results for Eye Contact Instances (Dunn's test):")
+  print(eye_contact_instances_dunn)
+}
+
+# Perform ANOVA only if assumptions are met
+if (shapiro_eye_contact$p.value > 0.05 & levene_eye_contact$`Pr(>F)`[1] > 0.05) {
+  eye_contact_aov <- aov(total.eye.contact.time ~ condition + study, data = data)
+  print(summary(eye_contact_aov))
+  eye_contact_posthoc <- TukeyHSD(eye_contact_aov, "condition")
+  print("Post hoc results for Eye Contact Time (Tukey's HSD):")
+  print(eye_contact_posthoc)
+} else {
+  eye_contact_friedman <- friedman.test(total.eye.contact.time ~ condition | study, data = data)
+  print("Friedman's test for Eye Contact Time:")
+  print(eye_contact_friedman)
+  eye_contact_dunn <- dunn.test(data$total.eye.contact.time, data$condition, method = "bonferroni")
+  print("Post hoc results for Eye Contact Time (Dunn's test):")
+  print(eye_contact_dunn)
+}
+
+
+
+
+```
+
+
+```
+

@@ -1,0 +1,775 @@
+---
+title: "sgv_analysis"
+output: html_document
+date: "2024-10-22"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+## R Markdown
+
+```{r Libraries}
+# Load necessary libraries
+library(reshape2)
+library(dplyr)
+library(car)
+library(afex)
+library(ggplot2)
+library(tidyverse)
+```
+
+
+```{r Demographics}
+print("Demographics Summary...")
+data_demo <- read.csv("data/quals_demographics.csv")
+gender <- table(data_demo$Q2)
+print(gender)
+
+vision <-table(data_demo$Q4_1)
+vrexp <- table(data_demo$Q4_2)
+
+partner <- table(data_demo$Q5)
+
+prior <- table(data_demo$Q6)
+
+print(vision)
+print(vrexp)
+print(partner)
+print(prior)
+
+summary(data_demo)
+
+stdev <- sd(data_demo$Q3, na.rm = TRUE)
+print(stdev)
+```
+
+
+```{r PostStudy}
+print("PostStudy Summary...")
+data_post <- read.csv("data/quals_poststudy.csv")
+
+wilcox_test1 <- wilcox.test(data_post$Q2_1, data_post$Q2_2, paired = TRUE)
+print(wilcox_test1)
+
+wilcox_test2 <- wilcox.test(data_post$Q4_1, data_post$Q4_2, paired = TRUE)
+
+visualcue <- table(data_post$Q7)
+
+print(visualcue)
+
+print(wilcox_test2)
+
+summary(data_post)
+```
+
+
+```{r Questionnaire}
+string_array <- c("My intentions are accurately represented",
+                  "My partners intentions are accurately represented to me",
+                  "I can understand my partners' focus with ease",
+                  "It is better for me to understand my partner's focus",
+                  "It is better for my partner to understand my focus",
+                  "It is easy to observe my partner's attention",
+                  "It is easy for my partner to observe my attention",
+                  "I react to partner frequently",
+                  "My partner reacts to me frequently",
+                  "This form of visualization is effective",
+                  "This form of visualization is engaging")
+```
+
+
+
+```{r SummaryStats}
+
+
+data <- read.csv("data/quals_postcond_fill.csv")
+
+summary(data)
+
+data_long <- melt(data, id.vars = c("Q1", "Q2"),
+                  measure.vars = paste0("Q3_", 1:11),
+                  variable.name = "measurement", value.name = "score")
+
+# Step 3: Ensure the condition variable (Q2) is treated as a factor
+data_long$Q2 <- as.factor(data_long$Q2)
+
+# Step 4: Calculate summary statistics
+summary_stats <- data_long %>%
+  group_by(measurement, Q2) %>%
+  summarize(
+    mean = mean(score, na.rm = TRUE),
+    sd = sd(score, na.rm = TRUE),
+    median = median(score, na.rm = TRUE),
+    min = min(score, na.rm = TRUE),
+    max = max(score, na.rm = TRUE)
+  ) %>%
+  arrange(measurement, Q2)  # Ensure ordering by measurement first
+
+# 
+# # Step 5: Print the summary statistics
+# print(summary_stats, n = Inf)
+# 
+# # Step 2: Melt the data to long format for easier plotting
+# data_long <- melt(data, id.vars = c("Q1", "Q2"),
+#                   measure.vars = paste0("Q3_", 1:11),
+#                   variable.name = "measurement", value.name = "score")
+# 
+# # Ensure the condition variable (Q2) is treated as a factor
+# data_long$Q2 <- as.factor(data_long$Q2)
+# 
+# # Step 3: Loop through each measurement to create histograms
+# for (i in 1:11) {
+#   measurement_column <- paste0("Q3_", i)
+# 
+#   # Step 4: Create histogram for the current measurement
+#   p <- ggplot(data_long %>% filter(measurement == measurement_column), aes(x = score)) +
+#     geom_histogram(binwidth = 1, fill = "lightblue", color = "black") +
+#     labs(title = paste("Histogram of", measurement_column), x = "Score", y = "Frequency") +
+#     theme_minimal()
+# 
+#   # Step 5: Print the plot
+#   print(p)
+# }
+```
+
+```{r PlotData}
+# summary_stats <- data_long %>%
+#   group_by(measurement, Q2) %>%
+#   summarize(
+#     mean = mean(score, na.rm = TRUE),
+#     sd = sd(score, na.rm = TRUE),  # Calculate standard deviation
+#     .groups = 'drop'  # Avoid row names issue
+#   ) %>%
+#   arrange(measurement, Q2)
+# 
+# # Split summary_stats into two data frames
+# summary_stats_1_to_5 <- summary_stats %>% filter(measurement %in% c("Q3_1", "Q3_2", "Q3_3", "Q3_4", "Q3_5"))
+# summary_stats_6_to_11 <- summary_stats %>% filter(measurement %in% c("Q3_6", "Q3_7", "Q3_8", "Q3_9", "Q3_10", "Q3_11"))
+# 
+# # Create the first bar chart for Q3_1 to Q3_5
+# plot_1_to_5 <- ggplot(summary_stats_1_to_5, aes(x = measurement, y = mean, fill = as.factor(Q2))) +
+#   geom_bar(stat = "identity", position = position_dodge(width = 0.8), width = 0.7) +
+#   geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd),
+#                 position = position_dodge(width = 0.8),
+#                 width = 0.25) +  # Width of the error bars
+#   labs(
+#     x = "Measurement (Q3_1 to Q3_5)",
+#     y = "Average Score",
+#     fill = "Condition",
+#     title = "Average Scores for Q3_1 to Q3_5 with Error Bars"
+#   ) +
+#   theme_minimal() +
+#   theme(
+#     axis.text.x = element_text(angle = 45, hjust = 1),
+#     legend.position = "top"
+#   )
+# 
+# # Create the second bar chart for Q3_6 to Q3_11
+# plot_6_to_11 <- ggplot(summary_stats_6_to_11, aes(x = measurement, y = mean, fill = as.factor(Q2))) +
+#   geom_bar(stat = "identity", position = position_dodge(width = 0.8), width = 0.7) +
+#   geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd),
+#                 position = position_dodge(width = 0.8),
+#                 width = 0.25) +  # Width of the error bars
+#   labs(
+#     x = "Measurement (Q3_6 to Q3_11)",
+#     y = "Average Score",
+#     fill = "Condition",
+#     title = "Average Scores for Q3_6 to Q3_11 with Error Bars"
+#   ) +
+#   theme_minimal() +
+#   theme(
+#     axis.text.x = element_text(angle = 45, hjust = 1),
+#     legend.position = "top"
+#   )
+# 
+# # Display the plots
+# print(plot_1_to_5)
+# print(plot_6_to_11)
+```
+
+
+
+
+```{r ReshapeData}
+# # Reshape the summary stats into an 11x4 matrix
+# # Spread the data with `measurement` as rows and `Q2` as columns
+summary_matrix <- summary_stats %>%
+  pivot_wider(names_from = Q2, values_from = c(mean, sd))  # Reshape to wide format without row names
+
+# # Convert to matrix format if needed
+summary_array <- as.matrix(summary_matrix)
+
+# 
+# # Print the array
+# print(summary_array)
+```
+
+
+## Actual Data Analysis Under here vvvvvvv
+```{r NewRefined}
+library(dplyr)
+library(tidyr)
+library(rstatix)  # For non-parametric tests
+library(ARTool)   # For interaction analysis
+
+data <- read.csv("data/quals_postcond_fill.csv")
+
+# Ensure the condition variable (Q2) is treated as a factor
+data$Q2 <- as.factor(data$Q2)
+
+# Create separate factors for directionality and visualization style
+data <- data %>%
+  mutate(
+    Directionality = case_when(
+      Q2 %in% c(1, 3) ~ "Bi",  # Bi-directional conditions
+      Q2 %in% c(2, 4) ~ "Uni", # Uni-directional conditions
+      TRUE ~ NA_character_      # Catch unexpected values
+    ),
+    Visualization = case_when(
+      Q2 %in% c(1, 2) ~ "Ray",   # Ray visualization conditions
+      Q2 %in% c(3, 4) ~ "Hover", # Hover visualization conditions
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  mutate(
+    Directionality = factor(Directionality, levels = c("Uni", "Bi")),
+    Visualization = factor(Visualization, levels = c("Ray", "Hover"))
+  )
+
+table(data$Q2, data$Directionality)
+table(data$Q2, data$Visualization)
+
+# Initialize an empty data frame to store results
+results_df <- data.frame(
+  Measurement = character(),
+  Test = character(),
+  Effect = character(),
+  Statistic = numeric(),
+  p_value = numeric(),
+  stringsAsFactors = FALSE
+)
+
+############## cronbach
+library(psych)
+
+# Select the item columns
+item_columns <- paste0("Q3_", 1:11)
+scale_data <- data[, item_columns]
+
+# Compute Cronbach's alpha
+alpha_result <- psych::alpha(scale_data)
+
+# Print summary
+print(alpha_result$total)  # Shows overall alpha and other stats
+#############
+
+# Loop through each measurement from Q3_1 to Q3_11
+for (i in 1:11) {
+  measure_name <- paste0("Q3_", i)
+  cat("\nAnalyzing", measure_name, "\n")
+
+  data_measurement <- data %>%
+    select(Q1, Q2, Directionality, Visualization, all_of(measure_name)) %>%
+    rename(subjects = Q1, score = !!measure_name)
+
+  # Wilcoxon signed-rank test for Directionality (paired within subjects)
+  wilcox_dir <- data_measurement %>%
+    wilcox_test(score ~ Directionality, paired = TRUE)
+  # print(wilcox_dir)
+
+  # Store Wilcoxon Directionality results
+  results_df <- rbind(results_df, data.frame(
+    Measurement = measure_name,
+    Test = "Wilcoxon",
+    Effect = "Directionality",
+    Statistic = wilcox_dir$statistic,
+    p_value = wilcox_dir$p
+  ))
+
+  # Wilcoxon signed-rank test for Visualization Style (paired within subjects)
+  wilcox_vis <- data_measurement %>%
+    wilcox_test(score ~ Visualization, paired = TRUE)
+  # print(wilcox_vis)
+
+  # Store Wilcoxon Visualization results
+  results_df <- rbind(results_df, data.frame(
+    Measurement = measure_name,
+    Test = "Wilcoxon",
+    Effect = "Visualization",
+    Statistic = wilcox_vis$statistic,
+    p_value = wilcox_vis$p
+  ))
+
+  # Aligned Rank Transform (ART) for interaction effects
+  art_model <- art(score ~ Directionality * Visualization + (1|subjects), data = data_measurement)
+  art_anova <- anova(art_model)
+  print(art_anova)
+
+  # Store ART interaction results
+  results_df <- rbind(results_df, data.frame(
+    Measurement = measure_name,
+    Test = "ART ANOVA",
+    Effect = "Interaction",
+    Statistic = art_anova$F[3],
+    p_value = art_anova$`Pr(>F)`[3]
+  ))
+  }
+
+# Write the results to a CSV file
+write.csv(results_df, "analysis_results.csv", row.names = FALSE)
+
+```
+
+```{r diffPlot}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Load the data
+data <- read.csv("data/quals_postcond_fill.csv")
+
+# Ensure Q2 is treated as a factor
+data$Q2 <- as.factor(data$Q2)
+
+# Create Directionality and Visualization factors
+data <- data %>%
+  mutate(
+    Directionality = case_when(
+      Q2 %in% c(1, 3) ~ "Bi",  # Bi-directional conditions
+      Q2 %in% c(2, 4) ~ "Uni", # Uni-directional conditions
+      TRUE ~ NA_character_
+    ),
+    Visualization = case_when(
+      Q2 %in% c(1, 2) ~ "Ray",   # Ray visualization conditions
+      Q2 %in% c(3, 4) ~ "Hover", # Hover visualization conditions
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  mutate(
+    Directionality = factor(Directionality, levels = c("Uni", "Bi")),
+    Visualization = factor(Visualization, levels = c("Ray", "Hover"))
+  )
+
+# Reshape data to long format and rename measurements
+data_long <- data %>%
+  pivot_longer(cols = starts_with("Q3_"), names_to = "Measurement", values_to = "Score") %>%
+  mutate(Measurement = gsub("Q3_", "Q", Measurement))
+
+# Set Measurement order explicitly
+data_long$Measurement <- factor(data_long$Measurement, levels = paste0("Q", 1:11))
+
+# Compute summary statistics
+summary_stats <- data_long %>%
+  group_by(Measurement, Directionality, Visualization) %>%
+  summarize(
+    mean = mean(Score, na.rm = TRUE),
+    sd = sd(Score, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+print(summary_stats, n = Inf)
+write.csv(summary_stats, "output.csv", row.names = FALSE)
+
+# Split the data into two groups
+summary_stats_1_to_5 <- summary_stats %>%
+  filter(Measurement %in% c("Q1", "Q2", "Q3", "Q4", "Q5"))
+
+summary_stats_6_to_11 <- summary_stats %>%
+  filter(Measurement %in% c("Q6", "Q7", "Q8", "Q9", "Q10", "Q11"))
+
+# Function to create plots with increased text size
+create_plot <- function(data, x_label, title, fill_label) {
+  ggplot(data, aes(x = Measurement, y = mean, fill = get(fill_label))) +
+    geom_bar(stat = "identity", position = position_dodge(), width = 0.6) +
+    geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd), width = 0.2, position = position_dodge(0.6)) +
+    labs(
+      x = x_label,
+      y = "Mean Score",
+      title = title,
+      fill = fill_label
+    ) +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(size = 14, angle = 45, hjust = 1), 
+      axis.text.y = element_text(size = 14), 
+      axis.title.x = element_text(size = 16), 
+      axis.title.y = element_text(size = 16),
+      legend.title = element_text(size = 14),
+      legend.text = element_text(size = 12)
+    )
+}
+
+# Generate plots
+plot_dir_1_to_5 <- create_plot(summary_stats_1_to_5, "Measurement (Q1 to Q5)", "Directionality Effect for Q1 to Q5", "Directionality")
+plot_dir_6_to_11 <- create_plot(summary_stats_6_to_11, "Measurement (Q6 to Q11)", "Directionality Effect for Q6 to Q11", "Directionality")
+plot_vis_1_to_5 <- create_plot(summary_stats_1_to_5, "Measurement (Q1 to Q5)", "Visualization Effect for Q1 to Q5", "Visualization")
+plot_vis_6_to_11 <- create_plot(summary_stats_6_to_11, "Measurement (Q6 to Q11)", "Visualization Effect for Q6 to Q11", "Visualization")
+
+# Display the plots
+print(plot_dir_1_to_5)
+print(plot_dir_6_to_11)
+print(plot_vis_1_to_5)
+print(plot_vis_6_to_11)
+```
+
+```{r diffPlotboxsted}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Load the data
+data <- read.csv("data/quals_postcond_fill.csv")
+
+# Ensure Q2 is treated as a factor
+data$Q2 <- as.factor(data$Q2)
+
+# Create Directionality and Visualization factors
+data <- data %>%
+  mutate(
+    Directionality = case_when(
+      Q2 %in% c(1, 3) ~ "Bi",  # Bi-directional conditions
+      Q2 %in% c(2, 4) ~ "Uni", # Uni-directional conditions
+      TRUE ~ NA_character_
+    ),
+    Visualization = case_when(
+      Q2 %in% c(1, 2) ~ "Ray",   # Ray visualization conditions
+      Q2 %in% c(3, 4) ~ "Hover", # Hover visualization conditions
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  mutate(
+    Directionality = factor(Directionality, levels = c("Uni", "Bi")),
+    Visualization = factor(Visualization, levels = c("Ray", "Hover"))
+  )
+
+# Reshape data to long format and rename measurements
+data_long <- data %>%
+  pivot_longer(cols = starts_with("Q3_"), names_to = "Measurement", values_to = "Score") %>%
+  mutate(Measurement = gsub("Q3_", "Q", Measurement))
+
+# Set Measurement order explicitly
+data_long$Measurement <- factor(data_long$Measurement, levels = paste0("Q", 1:11))
+
+# Subset raw data for Q1–Q5 and Q6–Q11
+data_long_1_to_5 <- data_long %>% filter(Measurement %in% paste0("Q", 1:5))
+data_long_6_to_11 <- data_long %>% filter(Measurement %in% paste0("Q", 6:11))
+
+# Function to create box plots with raw data
+create_boxplot <- function(data, x_label, title, fill_label) {
+  ggplot(data, aes(x = Measurement, y = Score, fill = get(fill_label))) +
+    geom_boxplot(position = position_dodge(width = 0.75), width = 0.6, outlier.shape = 1) +
+    labs(
+      x = x_label,
+      y = "Score",
+      title = title,
+      fill = fill_label
+    ) +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(size = 14, angle = 45, hjust = 1), 
+      axis.text.y = element_text(size = 14), 
+      axis.title.x = element_text(size = 16), 
+      axis.title.y = element_text(size = 16),
+      legend.title = element_text(size = 14),
+      legend.text = element_text(size = 12)
+    ) +
+    scale_y_continuous(limits = c(0, 100))  # Adjust if needed
+}
+
+# Generate box plots
+plot_dir_1_to_5 <- create_boxplot(data_long_1_to_5, "Measurement (Q1 to Q5)", "Directionality Effect for Q1 to Q5", "Directionality")
+plot_dir_6_to_11 <- create_boxplot(data_long_6_to_11, "Measurement (Q6 to Q11)", "Directionality Effect for Q6 to Q11", "Directionality")
+plot_vis_1_to_5 <- create_boxplot(data_long_1_to_5, "Measurement (Q1 to Q5)", "Visualization Effect for Q1 to Q5", "Visualization")
+plot_vis_6_to_11 <- create_boxplot(data_long_6_to_11, "Measurement (Q6 to Q11)", "Visualization Effect for Q6 to Q11", "Visualization")
+
+# Display the plots
+print(plot_dir_1_to_5)
+print(plot_dir_6_to_11)
+print(plot_vis_1_to_5)
+print(plot_vis_6_to_11)
+```
+
+```{r diffPlotBox}
+# library(ggplot2)
+# library(dplyr)
+# library(tidyr)
+# 
+# # Load the data
+# data <- read.csv("data/quals_postcond_fill.csv")
+# 
+# # Ensure Q2 is treated as a factor
+# data$Q2 <- as.factor(data$Q2)
+# 
+# # Create Directionality and Visualization factors
+# data <- data %>%
+#   mutate(
+#     Directionality = case_when(
+#       Q2 %in% c(1, 3) ~ "Bi",  # Bi-directional conditions
+#       Q2 %in% c(2, 4) ~ "Uni", # Uni-directional conditions
+#       TRUE ~ NA_character_
+#     ),
+#     Visualization = case_when(
+#       Q2 %in% c(1, 2) ~ "Ray",   # Ray visualization conditions
+#       Q2 %in% c(3, 4) ~ "Hover", # Hover visualization conditions
+#       TRUE ~ NA_character_
+#     )
+#   ) %>%
+#   mutate(
+#     Directionality = factor(Directionality, levels = c("Uni", "Bi")),
+#     Visualization = factor(Visualization, levels = c("Ray", "Hover"))
+#   )
+# 
+# # Reshape data to long format and rename measurements
+# data_long <- data %>%
+#   pivot_longer(cols = starts_with("Q3_"), names_to = "Measurement", values_to = "Score") %>%
+#   mutate(Measurement = gsub("Q3_", "Q", Measurement))
+# 
+# # Set Measurement order explicitly
+# data_long$Measurement <- factor(data_long$Measurement, levels = paste0("Q", 1:11))
+# 
+# # Compute summary statistics
+# summary_stats <- data_long %>%
+#   group_by(Measurement, Directionality, Visualization) %>%
+#   summarize(
+#     mean = mean(Score, na.rm = TRUE),
+#     sd = sd(Score, na.rm = TRUE),
+#     .groups = "drop"
+#   )
+# 
+# print(summary_stats, n = Inf)
+# write.csv(summary_stats, "output.csv", row.names = FALSE)
+# 
+# # Split the data into two groups
+# summary_stats_1_to_5 <- summary_stats %>%
+#   filter(Measurement %in% c("Q1", "Q2", "Q3", "Q4", "Q5"))
+# 
+# summary_stats_6_to_11 <- summary_stats %>%
+#   filter(Measurement %in% c("Q6", "Q7", "Q8", "Q9", "Q10", "Q11"))
+# 
+# # Function to create box plots with increased text size
+# create_boxplot <- function(data, x_label, title, fill_label) {
+#   ggplot(data, aes(x = Measurement, y = mean, fill = get(fill_label))) +
+#     geom_boxplot() + #position = position_dodge(width = 0.75), width = 0.6, outlier.shape = 1
+#     labs(
+#       x = x_label,
+#       y = "Score",
+#       title = title,
+#       fill = fill_label
+#     ) +
+#     theme_minimal() +
+#     theme(
+#       axis.text.x = element_text(size = 14, angle = 45, hjust = 1), 
+#       axis.text.y = element_text(size = 14), 
+#       axis.title.x = element_text(size = 16), 
+#       axis.title.y = element_text(size = 16),
+#       legend.title = element_text(size = 14),
+#       legend.text = element_text(size = 12)
+#     ) +
+#     scale_y_continuous(limits = c(40, 90))  # Assuming Likert scale from 1-7
+# }
+# 
+# # Generate box plots
+# plot_dir_1_to_5 <- create_boxplot(summary_stats_1_to_5, "Measurement (Q1 to Q5)", "Directionality Effect for Q1 to Q5", "Directionality")
+# plot_dir_6_to_11 <- create_boxplot(summary_stats_6_to_11, "Measurement (Q6 to Q11)", "Directionality Effect for Q6 to Q11", "Directionality")
+# plot_vis_1_to_5 <- create_boxplot(summary_stats_1_to_5, "Measurement (Q1 to Q5)", "Visualization Effect for Q1 to Q5", "Visualization")
+# plot_vis_6_to_11 <- create_boxplot(summary_stats_6_to_11, "Measurement (Q6 to Q11)", "Visualization Effect for Q6 to Q11", "Visualization")
+# 
+# # Display the plots
+# print(plot_dir_1_to_5)
+# print(plot_dir_6_to_11)
+# print(plot_vis_1_to_5)
+# print(plot_vis_6_to_11)
+```
+
+```{r performance}
+library(ez)
+library(dplyr)
+
+# Load data
+data <- read.csv("sorted_objects_summary.csv")
+
+# Define factors using Q2 column
+data <- data %>%
+  mutate(
+    Directionality = case_when(
+      condition %in% c(1, 3) ~ "Bi",  # Bi-directional conditions
+      condition %in% c(2, 4) ~ "Uni", # Uni-directional conditions
+      TRUE ~ NA_character_
+    ),
+    Visualization = case_when(
+      condition %in% c(1, 2) ~ "Ray",   # Ray visualization conditions
+      condition %in% c(3, 4) ~ "Hover", # Hover visualization conditions
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  mutate(
+    Directionality = factor(Directionality, levels = c("Uni", "Bi")),
+    Visualization = factor(Visualization, levels = c("Ray", "Hover"))
+  )
+
+data$subject <- as.factor(data$study)  # Assuming 'study' represents individual subjects
+
+ggplot(data, aes(x = Visualization, y = num_sorted_objects, fill = Directionality)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(
+    title = "Number of Sorted Objects by Visualization Method and Directionality",
+    y = "Number of Sorted Objects",
+    x = "Visualization Method"
+  ) +
+  scale_fill_brewer(palette = "Set2") +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5)
+  )
+
+# Perform within-subjects ANOVA
+anova_results <- ezANOVA(
+  data = data,
+  dv = num_sorted_objects,
+  wid = subject,
+  within = .(Visualization, Directionality),
+  type = 3,
+  detailed = TRUE
+)
+
+# Print results
+print(anova_results)
+
+# Summary statistics
+summary_stats <- data %>%
+  group_by(Visualization, Directionality) %>%
+  summarise(
+    Mean = mean(num_sorted_objects, na.rm = TRUE),
+    SD = sd(num_sorted_objects, na.rm = TRUE),
+    N = n()
+  )
+
+print(summary_stats)
+
+
+```
+
+```{r Danger}
+library(ez)
+library(dplyr)
+
+# Load data
+data <- read.csv("danger_objects_summary.csv")
+
+# Define factors using Q2 column
+data <- data %>%
+  mutate(
+    Directionality = case_when(
+      condition %in% c(1, 3) ~ "Bi",  # Bi-directional conditions
+      condition %in% c(2, 4) ~ "Uni", # Uni-directional conditions
+      TRUE ~ NA_character_
+    ),
+    Visualization = case_when(
+      condition %in% c(1, 2) ~ "Ray",   # Ray visualization conditions
+      condition %in% c(3, 4) ~ "Hover", # Hover visualization conditions
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  mutate(
+    Directionality = factor(Directionality, levels = c("Uni", "Bi")),
+    Visualization = factor(Visualization, levels = c("Ray", "Hover"))
+  )
+
+data$subject <- as.factor(data$study)  # Assuming 'study' represents individual subjects
+
+# Create a box and whisker plot
+ggplot(data, aes(x = Visualization, y = num_danger_obj, fill = Directionality)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(
+    title = "Dangerous Objects Interaction by Visualization Method and Directionality",
+    y = "Number of Dangerous Objects",
+    x = "Visualization Method"
+  ) +
+  scale_fill_brewer(palette = "Set2") +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(hjust = 0.5)
+  )
+
+# Perform within-subjects ANOVA
+anova_results <- ezANOVA(
+  data = data,
+  dv = num_danger_obj,
+  wid = subject,
+  within = .(Visualization, Directionality),
+  type = 3,
+  detailed = TRUE
+)
+
+# Print results
+print(anova_results)
+
+# Summary statistics
+summary_stats <- data %>%
+  group_by(Visualization, Directionality) %>%
+  summarise(
+    Mean = mean(num_danger_obj, na.rm = TRUE),
+    SD = sd(num_danger_obj, na.rm = TRUE),
+    N = n()
+  )
+
+print(summary_stats)
+
+```
+
+```{r performanceArt}
+library(ARTool)
+library(dplyr)
+
+# Load data
+data <- read.csv("sorted_objects_summary.csv")
+
+# Define factors using Q2 column
+data <- data %>%
+  mutate(
+    Directionality = case_when(
+      condition %in% c(1, 3) ~ "Bi",  # Bi-directional conditions
+      condition %in% c(2, 4) ~ "Uni", # Uni-directional conditions
+      TRUE ~ NA_character_
+    ),
+    Visualization = case_when(
+      condition %in% c(1, 2) ~ "Ray",   # Ray visualization conditions
+      condition %in% c(3, 4) ~ "Hover", # Hover visualization conditions
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  mutate(
+    Directionality = factor(Directionality, levels = c("Uni", "Bi")),
+    Visualization = factor(Visualization, levels = c("Ray", "Hover"))
+  )
+
+data$subject <- as.factor(data$study)  # Assuming 'study' represents individual subjects
+
+# Apply ARTANOVA (Aligned Rank Transform ANOVA)
+# The 'art' function aligns and ranks the data
+art_data <- art(num_sorted_objects ~ Visualization * Directionality + Error(subject/(Visualization*Directionality)), data = data)
+
+# Print the ARTANOVA results
+summary(art_data)
+
+art_anova <- anova(art_data)
+print(art_anova)
+
+# Summary statistics
+summary_stats <- data %>%
+  group_by(Visualization, Directionality) %>%
+  summarise(
+    Mean = mean(num_sorted_objects, na.rm = TRUE),
+    SD = sd(num_sorted_objects, na.rm = TRUE),
+    N = n()
+  )
+
+print(summary_stats)
+```

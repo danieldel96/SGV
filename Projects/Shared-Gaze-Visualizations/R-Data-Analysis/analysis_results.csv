@@ -1,0 +1,34 @@
+"Measurement","Test","Effect","Statistic","p_value"
+"Q3_1","Wilcoxon","Directionality",245,0.0437
+"Q3_1","Wilcoxon","Visualization",625,0.0119
+"Q3_1","ART ANOVA","Interaction",0.131853131691953,0.717794504478741
+"Q3_2","Wilcoxon","Directionality",476,0.379
+"Q3_2","Wilcoxon","Visualization",707.5,0.0014
+"Q3_2","ART ANOVA","Interaction",0.0996624190161778,0.753330631062987
+"Q3_3","Wilcoxon","Directionality",483.5,0.326
+"Q3_3","Wilcoxon","Visualization",637.5,0.00228
+"Q3_3","ART ANOVA","Interaction",0.0136842563768207,0.907266814107531
+"Q3_4","Wilcoxon","Directionality",449,0.143
+"Q3_4","Wilcoxon","Visualization",524.5,0.026
+"Q3_4","ART ANOVA","Interaction",0.044253969812323,0.834094579851697
+"Q3_5","Wilcoxon","Directionality",325,0.876
+"Q3_5","Wilcoxon","Visualization",490.5,0.0366
+"Q3_5","ART ANOVA","Interaction",0.0103060843086565,0.919477066767658
+"Q3_6","Wilcoxon","Directionality",482,0.336
+"Q3_6","Wilcoxon","Visualization",640.5,0.00662
+"Q3_6","ART ANOVA","Interaction",0.0222763048601976,0.881854950102698
+"Q3_7","Wilcoxon","Directionality",461,0.497
+"Q3_7","Wilcoxon","Visualization",673.5,0.0056
+"Q3_7","ART ANOVA","Interaction",0.998617453166984,0.321658500118705
+"Q3_8","Wilcoxon","Directionality",273,0.239
+"Q3_8","Wilcoxon","Visualization",521,0.137
+"Q3_8","ART ANOVA","Interaction",0.580277513809937,0.449187554075408
+"Q3_9","Wilcoxon","Directionality",369.5,0.433
+"Q3_9","Wilcoxon","Visualization",535.5,0.296
+"Q3_9","ART ANOVA","Interaction",3.3587572634367,0.0718116197552955
+"Q3_10","Wilcoxon","Directionality",426,0.425
+"Q3_10","Wilcoxon","Visualization",621.5,0.00456
+"Q3_10","ART ANOVA","Interaction",0.29363863210674,0.589904991919174
+"Q3_11","Wilcoxon","Directionality",304,0.863
+"Q3_11","Wilcoxon","Visualization",458.5,0.0495
+"Q3_11","ART ANOVA","Interaction",1.36749316794069,0.246867741765496

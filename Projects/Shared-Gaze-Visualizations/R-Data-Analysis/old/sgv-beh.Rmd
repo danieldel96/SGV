@@ -1,0 +1,332 @@
+---
+title: "sgv_analysis"
+output: html_document
+date: "2024-10-22"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+## R Markdown
+
+```{r Libraries}
+# Load necessary libraries
+library(reshape2)
+library(dplyr)
+library(car)
+library(afex)
+library(ggplot2)
+library(tidyverse)
+```
+
+```{r Demographics}
+print("Demographics Summary...")
+data_demo <- read.csv("data/quals_demographics.csv")
+gender <- table(data_demo$Q2)
+print(gender)
+
+vision <-table(data_demo$Q4_1)
+vrexp <- table(data_demo$Q4_2)
+
+partner <- table(data_demo$Q5)
+
+prior <- table(data_demo$Q6)
+
+print(vision)
+print(vrexp)
+print(partner)
+print(prior)
+
+summary(data_demo)
+
+stdev <- sd(data_demo$Q3, na.rm = TRUE)
+print(stdev)
+```
+
+```{r PostStudy}
+print("PostStudy Summary...")
+data_post <- read.csv("data/quals_poststudy.csv")
+
+wilcox_test1 <- wilcox.test(data_post$Q2_1, data_post$Q2_2, paired = TRUE)
+print(wilcox_test1)
+
+wilcox_test2 <- wilcox.test(data_post$Q4_1, data_post$Q4_2, paired = TRUE)
+
+visualcue <- table(data_post$Q7)
+
+print(visualcue)
+
+print(wilcox_test2)
+
+summary(data_post)
+```
+
+```{r Questionnaire}
+string_array <- c("My intentions are accurately represented",
+                  "My partners intentions are accurately represented to me",
+                  "I can understand my partners' focus with ease",
+                  "It is better for me to understand my partner's focus",
+                  "It is better for my partner to understand my focus",
+                  "It is easy to observe my partner's attention",
+                  "It is easy for my partner to observe my attention",
+                  "I react to partner frequently",
+                  "My partner reacts to me frequently",
+                  "This form of visualization is effective",
+                  "This form of visualization is engaging")
+
+```
+
+
+
+```{r SummaryStats}
+
+
+data <- read.csv("data/quals_postcond_fill.csv")
+
+summary(data)
+
+data_long <- melt(data, id.vars = c("Q1", "Q2"),
+                  measure.vars = paste0("Q3_", 1:11),
+                  variable.name = "measurement", value.name = "score")
+
+# Step 3: Ensure the condition variable (Q2) is treated as a factor
+data_long$Q2 <- as.factor(data_long$Q2)
+
+# Step 4: Calculate summary statistics
+summary_stats <- data_long %>%
+  group_by(measurement, Q2) %>%
+  summarize(
+    mean = mean(score, na.rm = TRUE),
+    sd = sd(score, na.rm = TRUE),
+    median = median(score, na.rm = TRUE),
+    min = min(score, na.rm = TRUE),
+    max = max(score, na.rm = TRUE)
+  ) %>%
+  arrange(measurement, Q2)  # Ensure ordering by measurement first
+
+
+# Step 5: Print the summary statistics
+print(summary_stats, n = Inf)
+
+# Step 2: Melt the data to long format for easier plotting
+data_long <- melt(data, id.vars = c("Q1", "Q2"),
+                  measure.vars = paste0("Q3_", 1:11),
+                  variable.name = "measurement", value.name = "score")
+
+# Ensure the condition variable (Q2) is treated as a factor
+data_long$Q2 <- as.factor(data_long$Q2)
+
+# Step 3: Loop through each measurement to create histograms
+for (i in 1:11) {
+  measurement_column <- paste0("Q3_", i)
+
+  # Step 4: Create histogram for the current measurement
+  p <- ggplot(data_long %>% filter(measurement == measurement_column), aes(x = score)) +
+    geom_histogram(binwidth = 1, fill = "lightblue", color = "black") +
+    labs(title = paste("Histogram of", measurement_column), x = "Score", y = "Frequency") +
+    theme_minimal()
+
+  # Step 5: Print the plot
+  print(p)
+}
+
+```
+
+```{r PlotData}
+summary_stats <- data_long %>%
+  group_by(measurement, Q2) %>%
+  summarize(
+    mean = mean(score, na.rm = TRUE),
+    sd = sd(score, na.rm = TRUE),  # Calculate standard deviation
+    .groups = 'drop'  # Avoid row names issue
+  ) %>%
+  arrange(measurement, Q2)
+
+# Split summary_stats into two data frames
+summary_stats_1_to_5 <- summary_stats %>% filter(measurement %in% c("Q3_1", "Q3_2", "Q3_3", "Q3_4", "Q3_5"))
+summary_stats_6_to_11 <- summary_stats %>% filter(measurement %in% c("Q3_6", "Q3_7", "Q3_8", "Q3_9", "Q3_10", "Q3_11"))
+
+# Create the first bar chart for Q3_1 to Q3_5
+plot_1_to_5 <- ggplot(summary_stats_1_to_5, aes(x = measurement, y = mean, fill = as.factor(Q2))) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.8), width = 0.7) +
+  geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd), 
+                position = position_dodge(width = 0.8), 
+                width = 0.25) +  # Width of the error bars
+  labs(
+    x = "Measurement (Q3_1 to Q3_5)",
+    y = "Average Score",
+    fill = "Condition",
+    title = "Average Scores for Q3_1 to Q3_5 with Error Bars"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "top"
+  )
+
+# Create the second bar chart for Q3_6 to Q3_11
+plot_6_to_11 <- ggplot(summary_stats_6_to_11, aes(x = measurement, y = mean, fill = as.factor(Q2))) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.8), width = 0.7) +
+  geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd), 
+                position = position_dodge(width = 0.8), 
+                width = 0.25) +  # Width of the error bars
+  labs(
+    x = "Measurement (Q3_6 to Q3_11)",
+    y = "Average Score",
+    fill = "Condition",
+    title = "Average Scores for Q3_6 to Q3_11 with Error Bars"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "top"
+  )
+
+# Display the plots
+print(plot_1_to_5)
+print(plot_6_to_11)
+
+```
+
+```{r ReshapeData}
+# # Reshape the summary stats into an 11x4 matrix
+# # Spread the data with `measurement` as rows and `Q2` as columns
+summary_matrix <- summary_stats %>%
+  pivot_wider(names_from = Q2, values_from = c(mean, sd))  # Reshape to wide format without row names
+
+# # Convert to matrix format if needed
+summary_array <- as.matrix(summary_matrix)
+# 
+# # Print the array
+# print(summary_array)
+```
+
+
+## Actual Data Analysis Under here vvvvvvv
+
+#NonParametric test, considers all conditions separately
+```{r NonParametric}
+# read the data
+data <- read.csv("data/quals_postcond_fill.csv")
+
+
+# Ensure the condition variable (Q2) is treated as a factor
+data$Q2 <- as.factor(data$Q2)
+
+# Step 2: Loop through each measurement from Q3_1 to Q3_11
+for (i in 1:11) {
+  measure_name <- paste0("Q3_", i)
+  label <- string_array[i]
+  cat("\n", measure_name, label, "\n")
+  
+  print(summary_array[i,])
+  
+  # Dynamically select the column for each measurement
+  measurement_column <- paste0("Q3_", i)
+  
+  # Step 3: Prepare data for the current measurement
+  data_measurement <- data %>%
+    select(Q1, Q2, all_of(measurement_column)) %>%
+    rename(subjects = Q1, score = !!measurement_column)  # Rename columns for clarity
+  
+  # Step 4: Perform the Friedman Test
+  cat("\nRunning Friedman Test for", measurement_column, "\n")
+  friedman_result <- friedman.test(score ~ Q2 | subjects, data = data_measurement)
+  print(friedman_result)
+  
+  # Step 5: Conduct Post-hoc Analysis if the Friedman Test is Significant
+  if (friedman_result$p.value < 0.05) {
+    cat("Post-hoc analysis for", measurement_column, "\n")
+    
+    # Pairwise Wilcoxon tests with Bonferroni adjustment for multiple comparisons
+    posthoc_result <- pairwise.wilcox.test(data_measurement$score, data_measurement$Q2, 
+                                           p.adjust.method = "bonferroni", 
+                                           paired = TRUE)
+    print(posthoc_result)
+  } else {
+    cat("No significant differences found for", measurement_column, "\n")
+        posthoc_result <- pairwise.wilcox.test(data_measurement$score, data_measurement$Q2, 
+                                           p.adjust.method = "bonferroni", 
+                                           paired = TRUE)
+        print(posthoc_result)
+  }
+}
+```
+
+
+#Comparing Uni-directional vs Bi-directional
+```{r NonParametricUniVBi}
+# read the data
+# data <- read.csv("data/quals_postcond_univbi.csv")
+
+# 
+# # Step 2: Check for missing values in the dataset
+# missing_summary <- data %>%
+#   summarise(across(everything(), ~ sum(is.na(.)))) %>%
+#   pivot_longer(cols = everything(), names_to = "variable", values_to = "missing_count")
+# 
+# # Step 3: Print the summary of missing values
+# print(missing_summary)
+# 
+# Ensure the condition variable (Q2) is treated as a factor
+# data$Q2 <- as.factor(data$Q2)
+# 
+# # Step 2: Loop through each measurement from Q3_1 to Q3_11
+# for (i in 1:11) {
+#   # Dynamically select the column for each measurement
+#   measurement_column <- paste0("Q3_", i)
+# 
+#   # Step 3: Prepare data for the current measurement
+#   data_measurement <- data %>%
+#     select(Q1, Q2, all_of(measurement_column)) %>%
+#     rename(subjects = Q1, score = !!measurement_column)  # Rename columns for clarity
+# 
+#   # Step 4: Perform the Friedman Test
+#   cat("\nRunning Friedman Test for", measurement_column, "\n")
+#   friedman_result <- friedman.test(score ~ Q2 | subjects, data = data_measurement)
+#   print(friedman_result)
+# 
+#   # Step 5: Conduct Post-hoc Analysis if the Friedman Test is Significant
+#   if (friedman_result$p.value < 0.05) {
+#     cat("Post-hoc analysis for", measurement_column, "\n")
+# 
+#     # Pairwise Wilcoxon tests with Bonferroni adjustment for multiple comparisons
+#     posthoc_result <- pairwise.wilcox.test(data_measurement$score, data_measurement$Q2,
+#                                            p.adjust.method = "bonferroni",
+#                                            paired = TRUE)
+#     print(posthoc_result)
+#   } else {
+#     cat("No significant differences found for", measurement_column, "\n")
+#   }
+# }
+```
+
+
+```{r LinearEffects}
+# library(lme4)
+# library(emmeans)
+# 
+# # Step 1: Read the Data
+# data <- read.csv("data/quals_postcond_univbi.csv")
+# 
+# # Step 2: Melt the data to long format
+# data_long <- melt(data, id.vars = c("Q1", "Q2"), 
+#                   measure.vars = paste0("Q3_", 1:11),  
+#                   variable.name = "measurement", value.name = "score")
+# 
+# # Step 3: Fit the linear mixed-effects model
+# lmm_results <- lmer(score ~ Q2 + (1 | Q1), data = data_long)
+# 
+# summary(lmm_results)
+# 
+# # Step 4: Perform post hoc analysis
+# emmeans_results <- emmeans(lmm_results, ~ Q2)
+# pairwise_results <- pairs(emmeans_results)
+# 
+# # Step 5: Print results
+# print(emmeans_results)      # Estimated marginal means
+# print(pairwise_results)     # Pairwise comparisons
+```
